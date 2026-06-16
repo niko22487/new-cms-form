@@ -13,13 +13,10 @@
   --font-mono: ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
 }
 *{box-sizing:border-box;}
-html,body{margin:0;padding:0;}
-body{background:#E9E7E1;min-height:100vh;font-family:var(--font-sans);padding:26px 18px 40px;display:flex;flex-direction:column;align-items:center;gap:12px;}
-.proto-cap{font-size:12.5px;color:#6B7280;text-align:center;}
-.proto-cap b{color:#17191C;font-weight:600;}
-.stage{width:100%;max-width:1180px;}
+html,body{margin:0;padding:0;height:100%;}
+body{background:#F4F3EF;font-family:var(--font-sans);overflow:hidden;}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
-.ew{position:relative;width:100%;border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);overflow:hidden;background:#F4F3EF;font-family:var(--font-sans);font-size:13px;color:#17191C;min-height:580px;line-height:1.4;user-select:none;box-shadow:0 6px 30px rgba(0,0,0,0.10);}
+.ew{position:relative;width:100%;height:100%;overflow:hidden;background:#F4F3EF;font-family:var(--font-sans);font-size:13px;color:#17191C;line-height:1.4;user-select:none;display:flex;flex-direction:column;}
 .ed-tb{display:flex;align-items:center;height:38px;padding:0 10px;background:#fff;border-bottom:1px solid #E5E5EA;gap:5px;flex-shrink:0;}
 .tbl{display:flex;align-items:center;gap:3px;}
 .tbc{flex:1;display:flex;justify-content:center;align-items:center;gap:4px;}
@@ -32,7 +29,7 @@ body{background:#E9E7E1;min-height:100vh;font-family:var(--font-sans);padding:26
 .tico:hover{background:#F3F4F6;}
 .tbtab{font-size:12px;padding:3px 7px;border-radius:4px;color:#6B7280;cursor:pointer;}
 .tbtab.on{color:#116DFF;font-weight:500;background:#EEF3FF;}
-.edbody{display:flex;height:540px;overflow:hidden;}
+.edbody{display:flex;flex:1;min-height:0;overflow:hidden;}
 .nav{width:40px;flex-shrink:0;background:#fff;border-right:1px solid #E5E5EA;display:flex;flex-direction:column;align-items:center;padding:4px 0;gap:2px;z-index:5;}
 .navi{width:32px;height:32px;border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6B7280;font-size:18px;border:none;background:transparent;}
 .navi:hover{background:#F3F4F6;}
@@ -72,7 +69,7 @@ body{background:#E9E7E1;min-height:100vh;font-family:var(--font-sans);padding:26
 .canvas::-webkit-scrollbar-thumb{background:#BFC3C9;border-radius:6px;border:3px solid #F4F3EF;background-clip:padding-box;}
 .canvas::-webkit-scrollbar-thumb:hover{background:#A8ACB2;background-clip:padding-box;}
 .canvas::-webkit-scrollbar-track{background:transparent;}
-.csite{width:100%;background:#fff;border-radius:2px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+.csite{width:100%;flex-shrink:0;background:#fff;border-radius:2px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08);}
 .snav{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#F9F7F3;border-bottom:1px solid rgba(0,0,0,0.06);}
 .slogo{font-size:13px;font-weight:600;color:#5A4A35;}
 .slinks{display:flex;gap:14px;}
@@ -205,10 +202,6 @@ body{background:#E9E7E1;min-height:100vh;font-family:var(--font-sans);padding:26
 </style>
 </head>
 <body>
-
-<div class="proto-cap">Open the <b>+</b> panel → <b>Forms</b> → <b>Create new Form</b> to start. Choose <b>CMS Collection → Recipes</b> to see the connection.</div>
-
-<div class="stage">
 <h2 class="sr-only">Interactive prototype: a Wix Editor form connected to the Recipes CMS collection. Fields and the Submit button are individually selectable with a pink frame and each opens a Properties panel on the right.</h2>
 
 <div class="ew" id="ew">
@@ -436,7 +429,6 @@ body{background:#E9E7E1;min-height:100vh;font-family:var(--font-sans);padding:26
   <i class="ti ti-check" aria-hidden="true" style="font-size:14px"></i><span id="toast-msg"></span>
 </div>
 
-</div>
 </div>
 
 <script>
