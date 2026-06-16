@@ -164,6 +164,11 @@ body{background:#F4F3EF;font-family:var(--font-sans);overflow:hidden;}
 .pp-bind-txt{font-size:12px;color:#B0185E;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .pp-input{width:100%;height:30px;border:1px solid #E5E5EA;border-radius:5px;padding:0 9px;font-size:12px;color:#17191C;background:#fff;box-sizing:border-box;outline:none;}
 .pp-input:focus{border-color:#116DFF;}
+.pp-input[readonly]{background:#F7F7F8;color:#6B7280;cursor:default;}
+.pp-ta{height:auto;min-height:46px;padding:6px 9px;resize:none;line-height:1.4;}
+.pp-reveal{margin-top:8px;}
+.pp-ctl{display:flex;align-items:center;gap:7px;}
+.pp-lock{color:#9CA3AF;font-size:13px;}
 .pp-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;}
 .pp-row>span{font-size:12px;color:#17191C;}
 .pp-toggle{width:34px;height:20px;border-radius:10px;background:#116DFF;position:relative;cursor:pointer;flex-shrink:0;}
@@ -457,11 +462,11 @@ var WF={
 };
 var CMS={
   recipes:{name:'Recipes',id:'recipes',context:'Recipes Item',ctxType:'CMS collection',icon:'ti-database',title:'Submit a Recipe',sub:'Submit',singular:'Recipe',cls:'cms',fields:[
-    {l:'Recipe Name',t:'text',key:'recipeName',required:true},
-    {l:'Prep Time',t:'half',key:'prepTime'},
+    {l:'Recipe Name',t:'text',key:'recipeName',required:true,placeholder:'e.g. Apple Pie'},
+    {l:'Prep Time',t:'half',key:'prepTime',placeholder:'e.g. 15 min'},
     {l:'Cooking Time',t:'half',key:'cookingTime'},
-    {l:'Ingredients',t:'ta',key:'ingredients',required:true},
-    {l:'Instructions',t:'ta',key:'instructions'},
+    {l:'Ingredients',t:'ta',key:'ingredients',required:true,description:'One ingredient per line.'},
+    {l:'Instructions',t:'ta',key:'instructions',description:'Step-by-step method shown on the recipe page.'},
     {l:'Photos',t:'file',key:'photos'}
   ],items:[
     {recipeName:'Avocado Toast',prepTime:'10 min',cookingTime:'5 min',ingredients:'Sourdough bread, ripe avocado, lemon juice, chili flakes, sea salt',instructions:'Toast the bread. Mash the avocado with lemon and salt, spread it on the toast and finish with chili flakes.',photos:'avocado-toast.jpg'},
@@ -469,8 +474,8 @@ var CMS={
     {recipeName:'Veggie Curry',prepTime:'15 min',cookingTime:'30 min',ingredients:'Onion, garlic, mixed vegetables, coconut milk, curry paste',instructions:'Saute the onion and garlic, add the vegetables, stir in the curry paste and coconut milk, then simmer for 30 minutes.',photos:'veggie-curry.jpg'}
   ]},
   members:{name:'Members',id:'members',context:'members',ctxType:'Members context',icon:'ti-users',title:'Add a Member',sub:'Submit',singular:'Member',cls:'cms',fields:[
-    {l:'Full Name',t:'text',key:'fullName',required:true},
-    {l:'Email',t:'text',key:'email',required:true},
+    {l:'Full Name',t:'text',key:'fullName',required:true,placeholder:'First and last name'},
+    {l:'Email',t:'text',key:'email',required:true,description:'Used for account login.'},
     {l:'Phone',t:'text',key:'phone'},
     {l:'Bio',t:'ta',key:'bio'}
   ],items:[
@@ -478,10 +483,10 @@ var CMS={
     {fullName:'Daniel Levi',email:'daniel@vedayoga.com',phone:'+1 555 0148',bio:'Member since 2023. Loves vinyasa flow.'}
   ]},
   blog:{name:'Blog Posts',id:'blog',context:'Blog post item',ctxType:'Blog context',icon:'ti-file-text',title:'Write a Post',sub:'Publish',singular:'Post',cls:'cms',fields:[
-    {l:'Title',t:'text',key:'title',required:true},
+    {l:'Title',t:'text',key:'title',required:true,placeholder:'Your post headline'},
     {l:'Author',t:'text',key:'author'},
     {l:'Excerpt',t:'ta',key:'excerpt'},
-    {l:'Content',t:'ta',key:'content'},
+    {l:'Content',t:'ta',key:'content',description:'Supports rich text formatting.'},
     {l:'Cover Image',t:'file',key:'cover'}
   ],items:[
     {title:'5 Morning Stretches',author:'Maya Cohen',excerpt:'Start your day grounded and limber.',content:'Begin standing tall, then fold forward and breathe...',cover:'morning-stretches.jpg'},
@@ -701,6 +706,20 @@ function selectButton(el,ev){
 function selectFormFromPanel(){selectForm(null);}
 function clearAll(){clearSel();closePanel();}
 function toggleSwitch(el){var off=el.classList.toggle('off');el.setAttribute('aria-checked',off?'false':'true');}
+function toggleReveal(el,id){
+  var off=el.classList.toggle('off');
+  el.setAttribute('aria-checked',off?'false':'true');
+  if(id){var r=document.getElementById(id);if(r)r.style.display=off?'none':'';}
+}
+function propRow(label,editable,on,reveal,rid){
+  var tcls='pp-toggle'+(editable?'':' locked')+(on?'':' off');
+  var toggle=editable
+    ? '<div class="'+tcls+'" role="switch" aria-checked="'+(on?'true':'false')+'" onclick="toggleReveal(this,\''+(rid||'')+'\')"></div>'
+    : '<span class="pp-ctl"><i class="ti ti-lock pp-lock" aria-hidden="true"></i><div class="'+tcls+'" role="switch" aria-checked="'+(on?'true':'false')+'" aria-readonly="true"></div></span>';
+  var sec='<div class="pp-sec"><div class="pp-row"><span>'+label+'</span>'+toggle+'</div>';
+  if(reveal!=null) sec+='<div id="'+rid+'" class="pp-reveal"'+(on?'':' style="display:none"')+'>'+reveal+'</div>';
+  return sec+'</div>';
+}
 function renderPanelForm(){
   var inner=document.getElementById('ppInner');
   if(CF.type==='cms'){
@@ -736,27 +755,28 @@ function renderPanelForm(){
 }
 function renderPanelField(idx){
   var f=CF.data.fields[idx];
+  var wf=(CF.type==='wf');
   var path=CF.collId+'.'+fkey(f);
   var valueSec='<div class="pp-sec"><span class="pp-lbl">Value</span>'
     +'<div class="pp-bind"><span class="pp-bind-ic">'+snake(15,'#E21E78')+'</span>'
     +'<span class="pp-bind-path">'+path+'</span></div></div>';
-  var reqSec;
-  if(CF.type==='wf'){
-    reqSec='<div class="pp-sec"><div class="pp-row"><span>Required field</span><div class="pp-toggle off" role="switch" aria-checked="false" onclick="toggleSwitch(this)"></div></div></div>';
-  } else {
-    var req=!!f.required;
-    reqSec='<div class="pp-sec"><div class="pp-row"><span>Required field</span><div class="pp-toggle locked'+(req?'':' off')+'" role="switch" aria-checked="'+(req?'true':'false')+'" aria-readonly="true" title="Set in the collection"></div></div>'
-      +'<div class="pp-hint">Comes from the collection field settings &#8212; can\'t be changed here.</div></div>';
-  }
+  var titleSec='<div class="pp-sec"><span class="pp-lbl">Field title</span><input class="pp-input" value="'+f.l+'"></div>';
+  var phCtrl=wf
+    ? '<input class="pp-input" placeholder="Enter placeholder text">'
+    : '<input class="pp-input" readonly value="'+(f.placeholder||'')+'">';
+  var dsCtrl=wf
+    ? '<textarea class="pp-input pp-ta" placeholder="Shown in a tooltip on hover"></textarea>'
+    : '<textarea class="pp-input pp-ta" readonly>'+(f.description||'')+'</textarea>';
+  var sections=valueSec+titleSec
+    +propRow('Placeholder text',wf,(wf?false:!!f.placeholder),phCtrl,'rv-ph')
+    +propRow('Field description',wf,(wf?false:!!f.description),dsCtrl,'rv-ds')
+    +propRow('Required field',wf,(wf?false:!!f.required),null,null);
+  if(!wf) sections+='<div class="pp-hint">Placeholder, description and required come from the collection and can&#8217;t be changed here.</div>';
   document.getElementById('ppInner').innerHTML=
     '<div class="pp-head"><button class="pp-back" onclick="selectFormFromPanel()" aria-label="Back to form"><i class="ti ti-chevron-left" aria-hidden="true"></i></button>'
     +'<div class="pp-title">Properties</div>'
     +'<button class="pp-icbtn" aria-label="More actions"><i class="ti ti-dots" aria-hidden="true"></i></button></div>'
-    +'<div class="pp-body">'
-    +valueSec
-    +'<div class="pp-sec"><span class="pp-lbl">Field title</span><input class="pp-input" value="'+f.l+'"></div>'
-    +reqSec
-    +'</div>';
+    +'<div class="pp-body">'+sections+'</div>';
 }
 function renderPanelButton(){
   var head='<div class="pp-head"><button class="pp-back" onclick="selectFormFromPanel()" aria-label="Back to form"><i class="ti ti-chevron-left" aria-hidden="true"></i></button>'
