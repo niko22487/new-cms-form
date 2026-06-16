@@ -124,17 +124,12 @@ body{background:#F4F3EF;font-family:var(--font-sans);overflow:hidden;}
 .cffile.filled{justify-content:flex-start;gap:8px;color:#17191C;border-style:solid;border-color:#E5E5EA;}
 .ph-thumb{width:22px;height:22px;border-radius:3px;background:#F0EAFF;color:#7B5EA7;display:inline-flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
 .ph-x{margin-left:auto;color:#9CA3AF;font-size:14px;}
-.editlist{width:100%;border:1px solid #E5E5EA;border-radius:6px;background:#fff;margin-bottom:14px;overflow:hidden;}
-.el-head{display:flex;align-items:center;gap:6px;padding:8px 12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:#6B7280;background:#FAFAFA;border-bottom:1px solid #F0F0F0;}
-.el-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid #F5F5F5;}
-.el-row:last-child{border-bottom:none;}
-.el-row.on{background:#FDF1F6;}
-.el-name{font-size:12px;font-weight:500;color:#17191C;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.el-meta{font-size:11px;color:#9CA3AF;flex-shrink:0;}
-.el-edit{border:1px solid #E5E5EA;background:#fff;color:#116DFF;font-size:11px;font-weight:500;padding:4px 11px;border-radius:5px;cursor:pointer;flex-shrink:0;}
-.el-edit:hover{background:#F3F4F6;}
-.el-row.on .el-edit{background:#E21E78;border-color:#E21E78;color:#fff;}
-.el-row.on .el-edit:hover{background:#C71865;}
+.itempick{margin-bottom:12px;padding-bottom:12px;border-bottom:1px dashed #EAD7E0;}
+.itemsel-wrap{position:relative;}
+.itemsel{width:100%;height:30px;border:1px solid #E5E5EA;border-radius:4px;background:#fff;padding:0 28px 0 9px;font-size:12px;color:#17191C;font-family:var(--font-sans);cursor:pointer;-webkit-appearance:none;appearance:none;outline:none;}
+.itemsel:hover{border-color:#C9CDD3;}
+.itemsel:focus{border-color:#E21E78;}
+.itemsel-chev{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:#6B7280;font-size:15px;pointer-events:none;}
 .pp-seg{display:flex;border:1px solid #E5E5EA;border-radius:6px;overflow:hidden;}
 .pp-seg-btn{flex:1;border:none;border-right:1px solid #E5E5EA;background:#fff;padding:8px 6px;font-size:12px;color:#6B7280;cursor:pointer;}
 .pp-seg-btn:last-child{border-right:none;}
@@ -562,6 +557,14 @@ function renderCanvas(){
     ? '<div class="cbadge cms"><i class="ti ti-database" aria-hidden="true" style="font-size:10px"></i> Connected to <strong>'+dest+'</strong></div>'
     : '<div class="cbadge"><i class="ti ti-forms" aria-hidden="true" style="font-size:10px"></i> Wix Forms</div>';
   var title=edit?('Edit '+(data.singular||'Item')):data.title;
+  var picker='';
+  if(edit&&items){
+    var opts='';
+    for(var p=0;p<items.length;p++){opts+='<option value="'+p+'"'+(p===CF.editItem?' selected':'')+'>'+items[p].recipeName+'</option>';}
+    picker='<div class="itempick"><div class="cflabel">Recipe to edit</div>'
+      +'<div class="itemsel-wrap"><select class="itemsel" onclick="event.stopPropagation()" onchange="onPickItem(this)">'+opts+'</select>'
+      +'<i class="ti ti-chevron-down itemsel-chev" aria-hidden="true"></i></div></div>';
+  }
   var html='',i=0,fs=data.fields;
   while(i<fs.length){
     if(fs[i].t==='half' && fs[i+1] && fs[i+1].t==='half'){
@@ -570,17 +573,8 @@ function renderCanvas(){
   }
   var submit='<div class="cfl cfl-sub" onclick="selectButton(this,event)"><button class="cfsub '+type+'">'+CF.submitLabel+'</button><div class="selframe"><i></i><i></i><i></i><i></i></div></div>';
   var handles='<div class="formframe"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>';
-  var form='<div class="cform '+type+'" onclick="selectForm(event)">'+badge+'<div class="ctitle">'+title+'</div>'+html+submit+handles+'</div>';
-  var list='';
-  if(edit&&items){
-    var rows='';
-    for(var r=0;r<items.length;r++){
-      var on=(r===CF.editItem)?' on':'';
-      rows+='<div class="el-row'+on+'"><div class="el-name">'+items[r].recipeName+'</div><div class="el-meta">'+items[r].prepTime+'</div><button class="el-edit" onclick="selectEditItem('+r+',event)">'+(r===CF.editItem?'Editing':'Edit')+'</button></div>';
-    }
-    list='<div class="editlist"><div class="el-head"><i class="ti ti-list" aria-hidden="true"></i> '+dest+' list</div>'+rows+'</div>';
-  }
-  document.getElementById('form-area').innerHTML=list+form;
+  document.getElementById('form-area').innerHTML=
+    '<div class="cform '+type+'" onclick="selectForm(event)">'+badge+'<div class="ctitle">'+title+'</div>'+picker+html+submit+handles+'</div>';
 }
 function setMode(m){
   if(!CF||CF.mode===m) return;
@@ -589,11 +583,11 @@ function setMode(m){
   renderCanvas();
   selectForm(null);
 }
-function selectEditItem(idx,ev){
-  if(ev) ev.stopPropagation();
-  CF.editItem=idx;
+function onPickItem(el){
+  CF.editItem=parseInt(el.value,10);
+  var wasOpen=document.getElementById('ppanel').classList.contains('open');
   renderCanvas();
-  selectForm(null);
+  if(wasOpen) selectForm(null);
 }
 function openPanel(){document.getElementById('ppanel').classList.add('open');}
 function closePanel(){document.getElementById('ppanel').classList.remove('open');}
@@ -639,7 +633,7 @@ function renderPanelForm(){
       +'<div class="pp-card"><div class="cic"><i class="ti ti-tools-kitchen-2" aria-hidden="true"></i></div>'
       +'<div class="ctx"><b>'+CF.context+'</b><span>'+CF.dest+' collection</span></div></div></div>'
       +seg+src
-      +'<div class="pp-hint">'+(edit?'The form loads the item picked in the list, lets visitors edit it, and saves changes back.':'All fields save to a new item in the collection. Select a field to see how it maps.')+'</div>'
+      +'<div class="pp-hint">'+(edit?'The form loads the recipe chosen in the dropdown, lets visitors edit it, and saves changes back.':'All fields save to a new item in the collection. Select a field to see how it maps.')+'</div>'
       +'</div>';
   } else {
     inner.innerHTML=
