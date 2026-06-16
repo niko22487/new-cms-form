@@ -90,6 +90,10 @@ body{background:#F4F3EF;font-family:var(--font-sans);overflow:hidden;}
 .cfrow{display:flex;gap:8px;}
 .cfrow .cfl{flex:1;}
 .cflabel{font-size:11px;color:#6B7280;font-weight:500;margin-bottom:3px;}
+.fdesc{position:relative;display:inline-flex;align-items:center;margin-left:5px;color:#9CA3AF;cursor:help;vertical-align:middle;}
+.fdesc>i{font-size:13px;}
+.fdesc-tip{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);background:#17191C;color:#fff;font-size:11px;font-weight:400;line-height:1.45;padding:6px 9px;border-radius:6px;width:max-content;max-width:190px;white-space:normal;text-align:left;display:none;z-index:60;pointer-events:none;box-shadow:0 3px 10px rgba(0,0,0,0.2);}
+.fdesc:hover .fdesc-tip{display:block;}
 .cfinput{width:100%;height:26px;border:1px solid #E5E5EA;border-radius:3px;background:#F9F9F9;padding:0 8px;font-size:11px;color:#9CA3AF;box-sizing:border-box;}
 .cfta{width:100%;height:50px;border:1px solid #E5E5EA;border-radius:3px;background:#F9F9F9;padding:6px 8px;font-size:11px;color:#9CA3AF;resize:none;box-sizing:border-box;}
 .cffile{width:100%;border:1px dashed #C9CDD3;border-radius:3px;background:#F9F9F9;padding:11px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;color:#9CA3AF;box-sizing:border-box;}
@@ -455,7 +459,7 @@ body{background:#F4F3EF;font-family:var(--font-sans);overflow:hidden;}
 <script>
 var cType=null,cWF=null,cCMS=null,CF=null;
 var WF={
-  contact:{id:'contact',icon:'ti-mail',title:'Contact Us',sub:'Send Message',cls:'wf',fields:[{l:'Name',t:'text'},{l:'Email',t:'text'},{l:'Phone',t:'text'},{l:'Message',t:'ta'}]},
+  contact:{id:'contact',icon:'ti-mail',title:'Contact Us',sub:'Send Message',cls:'wf',fields:[{l:'Name',t:'text'},{l:'Email',t:'text'},{l:'Phone',t:'text'},{l:'Message',t:'ta',description:'Tell us what you need help with.'}]},
   subscribe:{id:'subscribe',icon:'ti-bell',title:'Subscribe',sub:'Subscribe',cls:'wf',fields:[{l:'First Name',t:'text'},{l:'Email Address',t:'text'}]},
   rsvp:{id:'rsvp',icon:'ti-calendar-check',title:'RSVP',sub:'RSVP',cls:'wf',fields:[{l:'Full Name',t:'text'},{l:'Email',t:'text'},{l:'Number of Guests',t:'text'},{l:'Notes',t:'ta'}]},
   new:{id:'new',icon:'ti-forms',title:'New Form',sub:'Submit',cls:'wf',fields:[{l:'Name',t:'text'},{l:'Email',t:'text'},{l:'Message',t:'ta'}]}
@@ -571,7 +575,7 @@ function fieldHTML(f,idx,item){
     ? '<div class="cffile filled"><span class="ph-thumb"><i class="ti ti-photo" aria-hidden="true"></i></span> '+val+' <i class="ti ti-x ph-x" aria-hidden="true"></i></div>'
     : '<div class="cffile"><i class="ti ti-photo" aria-hidden="true" style="font-size:14px"></i> Upload '+f.l.toLowerCase()+'</div>';
   else inner='<input class="cfinput'+(has?' filled':'')+'" type="text" '+(has?'value="'+val+'" ':'placeholder="'+f.l+'&#8230;" ')+'readonly>';
-  return '<div class="cfl" data-idx="'+idx+'" onclick="selectField(this,event)"><div class="cflabel">'+f.l+'</div>'+inner+'<div class="selframe"><i></i><i></i><i></i><i></i></div></div>';
+  return '<div class="cfl" data-idx="'+idx+'" onclick="selectField(this,event)"><div class="cflabel">'+f.l+(f.description?'<span class="fdesc"><i class="ti ti-info-circle" aria-hidden="true"></i><span class="fdesc-tip">'+f.description+'</span></span>':'')+'</div>'+inner+'<div class="selframe"><i></i><i></i><i></i><i></i></div></div>';
 }
 function renderForm(data,type,dest){
   CF={type:type,dest:dest,data:data,context:(data.context||(dest+' Item')),collId:(data.id||dest.toLowerCase().replace(/[^a-z0-9]/g,'')),ctxType:(data.ctxType||'CMS collection'),icon:(data.icon||(type==='wf'?'ti-forms':'ti-database')),mode:'new',editItem:0,submitLabel:data.sub};
@@ -762,15 +766,15 @@ function renderPanelField(idx){
     +'<span class="pp-bind-path">'+path+'</span></div></div>';
   var titleSec='<div class="pp-sec"><span class="pp-lbl">Field title</span><input class="pp-input" value="'+f.l+'"></div>';
   var phCtrl=wf
-    ? '<input class="pp-input" placeholder="Enter placeholder text">'
+    ? '<input class="pp-input" placeholder="Enter placeholder text" value="'+(f.placeholder||'')+'">'
     : '<input class="pp-input" readonly value="'+(f.placeholder||'')+'">';
   var dsCtrl=wf
-    ? '<textarea class="pp-input pp-ta" placeholder="Shown in a tooltip on hover"></textarea>'
+    ? '<textarea class="pp-input pp-ta" placeholder="Shown in a tooltip on hover">'+(f.description||'')+'</textarea>'
     : '<textarea class="pp-input pp-ta" readonly>'+(f.description||'')+'</textarea>';
   var sections=valueSec+titleSec
-    +propRow('Placeholder text',wf,(wf?false:!!f.placeholder),phCtrl,'rv-ph')
-    +propRow('Field description',wf,(wf?false:!!f.description),dsCtrl,'rv-ds')
-    +propRow('Required field',wf,(wf?false:!!f.required),null,null);
+    +propRow('Placeholder text',wf,!!f.placeholder,phCtrl,'rv-ph')
+    +propRow('Field description',wf,!!f.description,dsCtrl,'rv-ds')
+    +propRow('Required field',wf,!!f.required,null,null);
   if(!wf) sections+='<div class="pp-hint">Placeholder, description and required come from the collection and can&#8217;t be changed here.</div>';
   document.getElementById('ppInner').innerHTML=
     '<div class="pp-head"><button class="pp-back" onclick="selectFormFromPanel()" aria-label="Back to form"><i class="ti ti-chevron-left" aria-hidden="true"></i></button>'
