@@ -120,6 +120,25 @@ body{background:#F4F3EF;font-family:var(--font-sans);overflow:hidden;}
 .cfsub.cms{background:#C9956D;}
 .cfl-sub{margin-top:8px;}
 .cfl-sub .cfsub{margin-top:0;}
+.cfinput.filled,.cfta.filled{color:#17191C;}
+.cffile.filled{justify-content:flex-start;gap:8px;color:#17191C;border-style:solid;border-color:#E5E5EA;}
+.ph-thumb{width:22px;height:22px;border-radius:3px;background:#F0EAFF;color:#7B5EA7;display:inline-flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.ph-x{margin-left:auto;color:#9CA3AF;font-size:14px;}
+.editlist{width:100%;border:1px solid #E5E5EA;border-radius:6px;background:#fff;margin-bottom:14px;overflow:hidden;}
+.el-head{display:flex;align-items:center;gap:6px;padding:8px 12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:#6B7280;background:#FAFAFA;border-bottom:1px solid #F0F0F0;}
+.el-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid #F5F5F5;}
+.el-row:last-child{border-bottom:none;}
+.el-row.on{background:#FDF1F6;}
+.el-name{font-size:12px;font-weight:500;color:#17191C;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.el-meta{font-size:11px;color:#9CA3AF;flex-shrink:0;}
+.el-edit{border:1px solid #E5E5EA;background:#fff;color:#116DFF;font-size:11px;font-weight:500;padding:4px 11px;border-radius:5px;cursor:pointer;flex-shrink:0;}
+.el-edit:hover{background:#F3F4F6;}
+.el-row.on .el-edit{background:#E21E78;border-color:#E21E78;color:#fff;}
+.el-row.on .el-edit:hover{background:#C71865;}
+.pp-seg{display:flex;border:1px solid #E5E5EA;border-radius:6px;overflow:hidden;}
+.pp-seg-btn{flex:1;border:none;border-right:1px solid #E5E5EA;background:#fff;padding:8px 6px;font-size:12px;color:#6B7280;cursor:pointer;}
+.pp-seg-btn:last-child{border-right:none;}
+.pp-seg-btn.on{background:#EEF3FF;color:#116DFF;font-weight:500;}
 .ppanel{width:0;flex-shrink:0;background:#fff;border-left:1px solid #E5E5EA;overflow:hidden;transition:width .2s ease;}
 .ppanel.open{width:286px;}
 .pp-inner{width:286px;height:100%;display:flex;flex-direction:column;}
@@ -441,15 +460,19 @@ var WF={
   new:{title:'New Form',sub:'Submit',cls:'wf',fields:[{l:'Name',t:'text'},{l:'Email',t:'text'},{l:'Message',t:'ta'}]}
 };
 var CMS={
-  recipes:{name:'Recipes',id:'recipes',context:'Recipes Item',title:'Submit a Recipe',sub:'Submit',cls:'cms',fields:[
+  recipes:{name:'Recipes',id:'recipes',context:'Recipes Item',title:'Submit a Recipe',sub:'Submit',singular:'Recipe',cls:'cms',fields:[
     {l:'Recipe Name',t:'text',key:'recipeName'},
     {l:'Prep Time',t:'half',key:'prepTime'},
     {l:'Cooking Time',t:'half',key:'cookingTime'},
     {l:'Ingredients',t:'ta',key:'ingredients'},
     {l:'Instructions',t:'ta',key:'instructions'},
     {l:'Photos',t:'file',key:'photos'}
+  ],items:[
+    {recipeName:'Avocado Toast',prepTime:'10 min',cookingTime:'5 min',ingredients:'Sourdough bread, ripe avocado, lemon juice, chili flakes, sea salt',instructions:'Toast the bread. Mash the avocado with lemon and salt, spread it on the toast and finish with chili flakes.',photos:'avocado-toast.jpg'},
+    {recipeName:'Berry Smoothie',prepTime:'5 min',cookingTime:'—',ingredients:'Mixed berries, banana, Greek yogurt, honey, ice',instructions:'Add all the ingredients to a blender and blend until smooth.',photos:'berry-smoothie.jpg'},
+    {recipeName:'Veggie Curry',prepTime:'15 min',cookingTime:'30 min',ingredients:'Onion, garlic, mixed vegetables, coconut milk, curry paste',instructions:'Saute the onion and garlic, add the vegetables, stir in the curry paste and coconut milk, then simmer for 30 minutes.',photos:'veggie-curry.jpg'}
   ]},
-  new:{name:'New Collection',id:'collection',context:'Collection Item',title:'New Form',sub:'Submit',cls:'cms',fields:[
+  new:{name:'New Collection',id:'collection',context:'Collection Item',title:'New Form',sub:'Submit',singular:'Item',cls:'cms',fields:[
     {l:'Field 1',t:'text',key:'field1'},{l:'Field 2',t:'text',key:'field2'}
   ]}
 };
@@ -512,31 +535,65 @@ function pickCMS(id,el){
 }
 function placeWF(){var f=WF[cWF]||WF.new;closeModal();renderForm(f,'wf','Wix Forms');showToast('Form "'+f.title+'" added &#8212; connected to Wix Forms');}
 function placeCMS(){var c=CMS[cCMS];if(!c)return;closeModal();renderForm(c,'cms',c.name);showToast('Form connected to '+c.name+' collection');}
-function fieldHTML(f,idx){
+function fieldHTML(f,idx,item){
+  var val=item?(item[f.key]||''):'';
+  var has=val!=='';
   var inner;
-  if(f.t==='ta') inner='<textarea class="cfta" placeholder="'+f.l+'&#8230;" readonly></textarea>';
-  else if(f.t==='file') inner='<div class="cffile"><i class="ti ti-photo" aria-hidden="true" style="font-size:14px"></i> Upload '+f.l.toLowerCase()+'</div>';
-  else inner='<input class="cfinput" type="text" placeholder="'+f.l+'&#8230;" readonly>';
+  if(f.t==='ta') inner='<textarea class="cfta'+(has?' filled':'')+'" '+(has?'':'placeholder="'+f.l+'&#8230;" ')+'readonly>'+(has?val:'')+'</textarea>';
+  else if(f.t==='file') inner=has
+    ? '<div class="cffile filled"><span class="ph-thumb"><i class="ti ti-photo" aria-hidden="true"></i></span> '+val+' <i class="ti ti-x ph-x" aria-hidden="true"></i></div>'
+    : '<div class="cffile"><i class="ti ti-photo" aria-hidden="true" style="font-size:14px"></i> Upload '+f.l.toLowerCase()+'</div>';
+  else inner='<input class="cfinput'+(has?' filled':'')+'" type="text" '+(has?'value="'+val+'" ':'placeholder="'+f.l+'&#8230;" ')+'readonly>';
   return '<div class="cfl" data-idx="'+idx+'" onclick="selectField(this,event)"><div class="cflabel">'+f.l+'</div>'+inner+'<div class="selframe"><i></i><i></i><i></i><i></i></div></div>';
 }
 function renderForm(data,type,dest){
-  CF={type:type,dest:dest,data:data,context:(data.context||(dest+' Item')),collId:(data.id||dest.toLowerCase().replace(/[^a-z0-9]/g,''))};
+  CF={type:type,dest:dest,data:data,context:(data.context||(dest+' Item')),collId:(data.id||dest.toLowerCase().replace(/[^a-z0-9]/g,'')),mode:'new',editItem:0,submitLabel:data.sub};
+  renderCanvas();
+  closeAddPanel();closePanel();
+  document.getElementById('canvas').scrollTop=0;
+}
+function renderCanvas(){
+  var data=CF.data,type=CF.type,dest=CF.dest;
+  var edit=(type==='cms'&&CF.mode==='edit');
+  var items=(data.items&&data.items.length)?data.items:null;
+  var item=(edit&&items)?items[CF.editItem]:null;
+  CF.submitLabel=edit?'Update':data.sub;
   var badge=type==='cms'
     ? '<div class="cbadge cms"><i class="ti ti-database" aria-hidden="true" style="font-size:10px"></i> Connected to <strong>'+dest+'</strong></div>'
     : '<div class="cbadge"><i class="ti ti-forms" aria-hidden="true" style="font-size:10px"></i> Wix Forms</div>';
+  var title=edit?('Edit '+(data.singular||'Item')):data.title;
   var html='',i=0,fs=data.fields;
   while(i<fs.length){
     if(fs[i].t==='half' && fs[i+1] && fs[i+1].t==='half'){
-      html+='<div class="cfrow">'+fieldHTML(fs[i],i)+fieldHTML(fs[i+1],i+1)+'</div>';i+=2;
-    } else { html+=fieldHTML(fs[i],i);i+=1; }
+      html+='<div class="cfrow">'+fieldHTML(fs[i],i,item)+fieldHTML(fs[i+1],i+1,item)+'</div>';i+=2;
+    } else { html+=fieldHTML(fs[i],i,item);i+=1; }
   }
-  var submit='<div class="cfl cfl-sub" onclick="selectButton(this,event)"><button class="cfsub '+type+'">'+data.sub+'</button><div class="selframe"><i></i><i></i><i></i><i></i></div></div>';
+  var submit='<div class="cfl cfl-sub" onclick="selectButton(this,event)"><button class="cfsub '+type+'">'+CF.submitLabel+'</button><div class="selframe"><i></i><i></i><i></i><i></i></div></div>';
   var handles='<div class="formframe"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>';
-  document.getElementById('form-area').innerHTML=
-    '<div class="cform '+type+'" onclick="selectForm(event)">'+badge
-    +'<div class="ctitle">'+data.title+'</div>'+html+submit+handles+'</div>';
-  closeAddPanel();closePanel();
-  document.getElementById('canvas').scrollTop=0;
+  var form='<div class="cform '+type+'" onclick="selectForm(event)">'+badge+'<div class="ctitle">'+title+'</div>'+html+submit+handles+'</div>';
+  var list='';
+  if(edit&&items){
+    var rows='';
+    for(var r=0;r<items.length;r++){
+      var on=(r===CF.editItem)?' on':'';
+      rows+='<div class="el-row'+on+'"><div class="el-name">'+items[r].recipeName+'</div><div class="el-meta">'+items[r].prepTime+'</div><button class="el-edit" onclick="selectEditItem('+r+',event)">'+(r===CF.editItem?'Editing':'Edit')+'</button></div>';
+    }
+    list='<div class="editlist"><div class="el-head"><i class="ti ti-list" aria-hidden="true"></i> '+dest+' list</div>'+rows+'</div>';
+  }
+  document.getElementById('form-area').innerHTML=list+form;
+}
+function setMode(m){
+  if(!CF||CF.mode===m) return;
+  CF.mode=m;
+  if(m==='edit'&&CF.editItem==null) CF.editItem=0;
+  renderCanvas();
+  selectForm(null);
+}
+function selectEditItem(idx,ev){
+  if(ev) ev.stopPropagation();
+  CF.editItem=idx;
+  renderCanvas();
+  selectForm(null);
 }
 function openPanel(){document.getElementById('ppanel').classList.add('open');}
 function closePanel(){document.getElementById('ppanel').classList.remove('open');}
@@ -566,15 +623,24 @@ function toggleSwitch(el){var off=el.classList.toggle('off');el.setAttribute('ar
 function renderPanelForm(){
   var inner=document.getElementById('ppInner');
   if(CF.type==='cms'){
+    var edit=CF.mode==='edit';
+    var seg='<div class="pp-sec"><span class="pp-lbl">What this form does</span>'
+      +'<div class="pp-seg"><button class="pp-seg-btn'+(edit?'':' on')+'" onclick="setMode(\'new\')">Add new item</button>'
+      +'<button class="pp-seg-btn'+(edit?' on':'')+'" onclick="setMode(\'edit\')">Update existing</button></div></div>';
+    var src=edit?('<div class="pp-sec"><span class="pp-lbl">Item to edit</span>'
+      +'<div class="pp-card"><div class="cic" style="background:#EEF3FF;color:#116DFF"><i class="ti ti-list" aria-hidden="true"></i></div>'
+      +'<div class="ctx"><b>Selected from a list</b><span>Reads &amp; writes the chosen item</span></div></div></div>'):'';
     inner.innerHTML=
       '<div class="pp-head"><div class="pp-title">Form</div>'
       +'<button class="pp-icbtn" aria-label="More actions"><i class="ti ti-dots" aria-hidden="true"></i></button>'
       +'<span class="pp-snake" title="Connected to CMS">'+snake(18,'#E21E78')+'</span></div>'
-      +'<div class="pp-body"><div class="pp-sec"><span class="pp-lbl">Connect Form to</span>'
+      +'<div class="pp-body">'
+      +'<div class="pp-sec"><span class="pp-lbl">Connect Form to</span>'
       +'<div class="pp-card"><div class="cic"><i class="ti ti-tools-kitchen-2" aria-hidden="true"></i></div>'
-      +'<div class="ctx"><b>'+CF.context+'</b><span>'+CF.dest+' collection</span></div></div>'
-      +'<div class="pp-hint">All fields in this form save to the connected collection. Select a field to see how it maps.</div>'
-      +'</div></div>';
+      +'<div class="ctx"><b>'+CF.context+'</b><span>'+CF.dest+' collection</span></div></div></div>'
+      +seg+src
+      +'<div class="pp-hint">'+(edit?'The form loads the item picked in the list, lets visitors edit it, and saves changes back.':'All fields save to a new item in the collection. Select a field to see how it maps.')+'</div>'
+      +'</div>';
   } else {
     inner.innerHTML=
       '<div class="pp-head"><div class="pp-title">Form</div>'
@@ -615,12 +681,12 @@ function renderPanelButton(){
     body='<div class="pp-sec"><span class="pp-lbl">Connect Button to</span>'
       +'<div class="pp-card"><div class="cic"><i class="ti ti-tools-kitchen-2" aria-hidden="true"></i></div>'
       +'<div class="ctx"><b>'+CF.context+'</b><span>'+CF.dest+' collection</span></div></div></div>'
-      +'<div class="pp-sec"><span class="pp-lbl">Button label</span><input class="pp-input" value="'+CF.data.sub+'"></div>'
+      +'<div class="pp-sec"><span class="pp-lbl">Button label</span><input class="pp-input" value="'+(CF.submitLabel||CF.data.sub)+'"></div>'
       +'<div class="pp-sec"><span class="pp-lbl">On click action</span>'
       +'<div class="pp-bind"><span class="pp-bind-ic">'+snake(15,'#E21E78')+'</span>'
       +'<span class="pp-bind-path">'+CF.collId+'.item.save</span></div></div>';
   } else {
-    body='<div class="pp-sec"><span class="pp-lbl">Button label</span><input class="pp-input" value="'+CF.data.sub+'"></div>'
+    body='<div class="pp-sec"><span class="pp-lbl">Button label</span><input class="pp-input" value="'+(CF.submitLabel||CF.data.sub)+'"></div>'
       +'<div class="pp-sec"><span class="pp-lbl">On click action</span><div class="pp-type"><i class="ti ti-send" aria-hidden="true"></i> Submit form</div></div>';
   }
   head+='</div>';
