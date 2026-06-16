@@ -400,14 +400,9 @@ body{background:#F4F3EF;font-family:var(--font-sans);overflow:hidden;}
             <div class="liinfo"><div class="liname">Subscribe</div><div class="limeta">2 fields &#183; 1,203 submissions</div></div>
             <div class="lichk"><i class="ti ti-check" aria-hidden="true" style="font-size:10px;color:#fff"></i></div>
           </div>
-          <div class="listitem" onclick="pickWF('register',this)">
-            <div class="liico"><i class="ti ti-user-plus" aria-hidden="true"></i></div>
-            <div class="liinfo"><div class="liname">Class Registration</div><div class="limeta">5 fields &#183; 12 submissions</div></div>
-            <div class="lichk"><i class="ti ti-check" aria-hidden="true" style="font-size:10px;color:#fff"></i></div>
-          </div>
-          <div class="listitem" onclick="pickWF('feedback',this)">
-            <div class="liico"><i class="ti ti-star" aria-hidden="true"></i></div>
-            <div class="liinfo"><div class="liname">Feedback</div><div class="limeta">3 fields &#183; 7 submissions</div></div>
+          <div class="listitem" onclick="pickWF('rsvp',this)">
+            <div class="liico"><i class="ti ti-calendar-check" aria-hidden="true"></i></div>
+            <div class="liinfo"><div class="liname">RSVP</div><div class="limeta">4 fields &#183; 21 responses</div></div>
             <div class="lichk"><i class="ti ti-check" aria-hidden="true" style="font-size:10px;color:#fff"></i></div>
           </div>
         </div>
@@ -454,14 +449,13 @@ body{background:#F4F3EF;font-family:var(--font-sans);overflow:hidden;}
 <script>
 var cType=null,cWF=null,cCMS=null,CF=null;
 var WF={
-  contact:{title:'Contact Us',sub:'Send Message',cls:'wf',fields:[{l:'Name',t:'text'},{l:'Email',t:'text'},{l:'Phone',t:'text'},{l:'Message',t:'ta'}]},
-  subscribe:{title:'Subscribe',sub:'Subscribe',cls:'wf',fields:[{l:'First Name',t:'text'},{l:'Email Address',t:'text'}]},
-  register:{title:'Class Registration',sub:'Register Now',cls:'wf',fields:[{l:'Full Name',t:'text'},{l:'Email',t:'text'},{l:'Phone',t:'text'},{l:'Preferred Class',t:'text'},{l:'Notes',t:'ta'}]},
-  feedback:{title:'Share Your Feedback',sub:'Submit',cls:'wf',fields:[{l:'Name',t:'text'},{l:'Rating',t:'text'},{l:'Comment',t:'ta'}]},
-  new:{title:'New Form',sub:'Submit',cls:'wf',fields:[{l:'Name',t:'text'},{l:'Email',t:'text'},{l:'Message',t:'ta'}]}
+  contact:{id:'contact',icon:'ti-mail',title:'Contact Us',sub:'Send Message',cls:'wf',fields:[{l:'Name',t:'text'},{l:'Email',t:'text'},{l:'Phone',t:'text'},{l:'Message',t:'ta'}]},
+  subscribe:{id:'subscribe',icon:'ti-bell',title:'Subscribe',sub:'Subscribe',cls:'wf',fields:[{l:'First Name',t:'text'},{l:'Email Address',t:'text'}]},
+  rsvp:{id:'rsvp',icon:'ti-calendar-check',title:'RSVP',sub:'RSVP',cls:'wf',fields:[{l:'Full Name',t:'text'},{l:'Email',t:'text'},{l:'Number of Guests',t:'text'},{l:'Notes',t:'ta'}]},
+  new:{id:'new',icon:'ti-forms',title:'New Form',sub:'Submit',cls:'wf',fields:[{l:'Name',t:'text'},{l:'Email',t:'text'},{l:'Message',t:'ta'}]}
 };
 var CMS={
-  recipes:{name:'Recipes',id:'recipes',context:'Recipes Item',title:'Submit a Recipe',sub:'Submit',singular:'Recipe',cls:'cms',fields:[
+  recipes:{name:'Recipes',id:'recipes',context:'Recipes Item',ctxType:'CMS collection',icon:'ti-tools-kitchen-2',title:'Submit a Recipe',sub:'Submit',singular:'Recipe',cls:'cms',fields:[
     {l:'Recipe Name',t:'text',key:'recipeName'},
     {l:'Prep Time',t:'half',key:'prepTime'},
     {l:'Cooking Time',t:'half',key:'cookingTime'},
@@ -473,7 +467,7 @@ var CMS={
     {recipeName:'Berry Smoothie',prepTime:'5 min',cookingTime:'—',ingredients:'Mixed berries, banana, Greek yogurt, honey, ice',instructions:'Add all the ingredients to a blender and blend until smooth.',photos:'berry-smoothie.jpg'},
     {recipeName:'Veggie Curry',prepTime:'15 min',cookingTime:'30 min',ingredients:'Onion, garlic, mixed vegetables, coconut milk, curry paste',instructions:'Saute the onion and garlic, add the vegetables, stir in the curry paste and coconut milk, then simmer for 30 minutes.',photos:'veggie-curry.jpg'}
   ]},
-  members:{name:'Members',id:'members',context:'Members Item',title:'Add a Member',sub:'Submit',singular:'Member',cls:'cms',fields:[
+  members:{name:'Members',id:'members',context:'members',ctxType:'Members context',icon:'ti-users',title:'Add a Member',sub:'Submit',singular:'Member',cls:'cms',fields:[
     {l:'Full Name',t:'text',key:'fullName'},
     {l:'Email',t:'text',key:'email'},
     {l:'Phone',t:'text',key:'phone'},
@@ -482,7 +476,7 @@ var CMS={
     {fullName:'Maya Cohen',email:'maya@vedayoga.com',phone:'+1 555 0182',bio:'Yoga instructor and weekend home cook.'},
     {fullName:'Daniel Levi',email:'daniel@vedayoga.com',phone:'+1 555 0148',bio:'Member since 2023. Loves vinyasa flow.'}
   ]},
-  blog:{name:'Blog Posts',id:'blog',context:'Blog Posts Item',title:'Write a Post',sub:'Publish',singular:'Post',cls:'cms',fields:[
+  blog:{name:'Blog Posts',id:'blog',context:'Blog post item',ctxType:'Blog context',icon:'ti-file-text',title:'Write a Post',sub:'Publish',singular:'Post',cls:'cms',fields:[
     {l:'Title',t:'text',key:'title'},
     {l:'Author',t:'text',key:'author'},
     {l:'Excerpt',t:'ta',key:'excerpt'},
@@ -492,7 +486,7 @@ var CMS={
     {title:'5 Morning Stretches',author:'Maya Cohen',excerpt:'Start your day grounded and limber.',content:'Begin standing tall, then fold forward and breathe...',cover:'morning-stretches.jpg'},
     {title:'Eating Mindfully',author:'Daniel Levi',excerpt:'Slow down and savor each bite.',content:'Mindful eating starts before the first bite...',cover:'mindful-eating.jpg'}
   ]},
-  new:{name:'New Collection',id:'collection',context:'Collection Item',title:'New Form',sub:'Submit',singular:'Item',cls:'cms',fields:[
+  new:{name:'New Collection',id:'collection',context:'Collection Item',ctxType:'CMS collection',icon:'ti-database',title:'New Form',sub:'Submit',singular:'Item',cls:'cms',fields:[
     {l:'Field 1',t:'text',key:'field1'},{l:'Field 2',t:'text',key:'field2'}
   ]}
 };
@@ -540,7 +534,7 @@ function goBack(){
   document.getElementById('ms1').style.display='';
 }
 function pickWF(id,el){
-  if(id==='new'){cWF='new';closeModal();renderForm(WF.new,'wf','Wix Forms');showToast('New form added &#8212; connected to Wix Forms');return;}
+  if(id==='new'){cWF='new';closeModal();renderForm(WF.new,'wf',WF.new.title);showToast('New form added &#8212; connected to Wix Forms');return;}
   cWF=id;
   document.querySelectorAll('#ms2wf .listitem').forEach(function(e){e.classList.remove('sel');});
   if(el) el.classList.add('sel');
@@ -553,7 +547,7 @@ function pickCMS(id,el){
   if(el) el.classList.add('sel');
   document.getElementById('btn2cms').disabled=false;
 }
-function placeWF(){var f=WF[cWF]||WF.new;closeModal();renderForm(f,'wf','Wix Forms');showToast('Form "'+f.title+'" added &#8212; connected to Wix Forms');}
+function placeWF(){var f=WF[cWF]||WF.new;closeModal();renderForm(f,'wf',f.title);showToast('Form "'+f.title+'" added &#8212; connected to Wix Forms');}
 function placeCMS(){var c=CMS[cCMS];if(!c)return;closeModal();renderForm(c,'cms',c.name);showToast('Form connected to '+c.name+' collection');}
 function fieldHTML(f,idx,item){
   var val=item?(item[f.key]||''):'';
@@ -567,7 +561,7 @@ function fieldHTML(f,idx,item){
   return '<div class="cfl" data-idx="'+idx+'" onclick="selectField(this,event)"><div class="cflabel">'+f.l+'</div>'+inner+'<div class="selframe"><i></i><i></i><i></i><i></i></div></div>';
 }
 function renderForm(data,type,dest){
-  CF={type:type,dest:dest,data:data,context:(data.context||(dest+' Item')),collId:(data.id||dest.toLowerCase().replace(/[^a-z0-9]/g,'')),mode:'new',editItem:0,submitLabel:data.sub};
+  CF={type:type,dest:dest,data:data,context:(data.context||(dest+' Item')),collId:(data.id||dest.toLowerCase().replace(/[^a-z0-9]/g,'')),ctxType:(data.ctxType||'CMS collection'),icon:(data.icon||(type==='wf'?'ti-forms':'ti-tools-kitchen-2')),mode:'new',editItem:0,submitLabel:data.sub};
   renderCanvas();
   closeAddPanel();closePanel();
   document.getElementById('canvas').scrollTop=0;
@@ -585,8 +579,9 @@ function renderCanvas(){
   var picker='';
   if(edit&&items){
     var opts='';
-    for(var p=0;p<items.length;p++){opts+='<option value="'+p+'"'+(p===CF.editItem?' selected':'')+'>'+items[p].recipeName+'</option>';}
-    picker='<div class="itempick"><div class="cflabel">Recipe to edit</div>'
+    var labelKey=data.fields[0].key;
+    for(var p=0;p<items.length;p++){opts+='<option value="'+p+'"'+(p===CF.editItem?' selected':'')+'>'+items[p][labelKey]+'</option>';}
+    picker='<div class="itempick"><div class="cflabel">'+(data.singular||'Item')+' to edit</div>'
       +'<div class="itemsel-wrap"><select class="itemsel" onclick="event.stopPropagation()" onchange="onPickItem(this)">'+opts+'</select>'
       +'<i class="ti ti-chevron-down itemsel-chev" aria-hidden="true"></i></div></div>';
   }
@@ -614,44 +609,63 @@ function onPickItem(el){
   renderCanvas();
   if(wasOpen) selectForm(null);
 }
-var CONTEXTS=[
-  {kind:'wf',id:'wf',name:'Wix Forms',type:'Form submissions',icon:'ti-forms',tint:'wf'},
-  {kind:'cms',id:'recipes',name:'Recipes',type:'CMS collection',icon:'ti-tools-kitchen-2',tint:'cms'},
-  {kind:'cms',id:'members',name:'Members',type:'CMS collection',icon:'ti-users',tint:'cms'},
-  {kind:'cms',id:'blog',name:'Blog Posts',type:'CMS collection',icon:'ti-file-text',tint:'cms'}
+var PICKER=[
+  {group:'Forms',items:[
+    {kind:'wf',id:'contact',name:'Contact Us',desc:'Wix form',icon:'ti-mail'},
+    {kind:'wf',id:'subscribe',name:'Subscribe',desc:'Wix form',icon:'ti-bell'},
+    {kind:'wf',id:'rsvp',name:'RSVP',desc:'Wix form',icon:'ti-calendar-check'},
+    {kind:'new-wf',name:'Create new',icon:'ti-plus'}
+  ]},
+  {group:'CMS',items:[
+    {kind:'cms',id:'recipes',name:'Recipes Item',desc:'CMS collection',icon:'ti-tools-kitchen-2'},
+    {kind:'new-cms',name:'Create New',icon:'ti-plus'}
+  ]},
+  {group:'Members',items:[
+    {kind:'cms',id:'members',name:'members',desc:'Members context',icon:'ti-users'}
+  ]},
+  {group:'Blog Posts',items:[
+    {kind:'cms',id:'blog',name:'Blog post item',desc:'Blog context',icon:'ti-file-text'}
+  ]}
 ];
 function openConnectPicker(){
   if(!CF) return;
-  var cur=(CF.type==='wf')?'wf':CF.collId;
-  function row(c){
-    var on=(c.id===cur)?' sel':'';
-    var st=c.tint==='cms'?'background:#FCE7F1;color:#E21E78':'background:#F0EAFF;color:#7B5EA7';
-    return '<div class="listitem'+on+'" onclick="chooseContext(\''+c.kind+'\',\''+c.id+'\')">'
-      +'<div class="liico" style="'+st+'"><i class="ti '+c.icon+'" aria-hidden="true"></i></div>'
-      +'<div class="liinfo"><div class="liname">'+c.name+'</div><div class="limeta">'+c.type+'</div></div>'
+  var curWf=(CF.type==='wf')?(CF.data&&CF.data.id):null;
+  var curCms=(CF.type==='cms')?CF.collId:null;
+  function row(it){
+    if(it.kind==='new-wf'||it.kind==='new-cms'){
+      return '<div class="listitem" onclick="chooseContext(\''+it.kind+'\')">'
+        +'<div class="liico" style="background:#EEF3FF;color:#116DFF"><i class="ti ti-plus" aria-hidden="true"></i></div>'
+        +'<div class="liinfo"><div class="liname" style="color:#116DFF">'+it.name+'</div></div></div>';
+    }
+    var on=((it.kind==='wf'&&it.id===curWf)||(it.kind==='cms'&&it.id===curCms))?' sel':'';
+    var st=it.kind==='wf'?'background:#F0EAFF;color:#7B5EA7':'background:#FCE7F1;color:#E21E78';
+    return '<div class="listitem'+on+'" onclick="chooseContext(\''+it.kind+'\',\''+it.id+'\')">'
+      +'<div class="liico" style="'+st+'"><i class="ti '+it.icon+'" aria-hidden="true"></i></div>'
+      +'<div class="liinfo"><div class="liname">'+it.name+'</div><div class="limeta">'+it.desc+'</div></div>'
       +'<div class="lichk"><i class="ti ti-check" aria-hidden="true" style="font-size:10px;color:#fff"></i></div></div>';
   }
-  var forms='',cms='';
-  for(var k=0;k<CONTEXTS.length;k++){ if(CONTEXTS[k].kind==='wf') forms+=row(CONTEXTS[k]); else cms+=row(CONTEXTS[k]); }
+  var html='';
+  for(var g=0;g<PICKER.length;g++){
+    html+='<div class="pp-lbl"'+(g>0?' style="margin-top:14px"':'')+'>'+PICKER[g].group+'</div>';
+    for(var i=0;i<PICKER[g].items.length;i++){ html+=row(PICKER[g].items[i]); }
+  }
   document.getElementById('ppInner').innerHTML=
     '<div class="pp-head"><button class="pp-back" onclick="selectFormFromPanel()" aria-label="Back to form"><i class="ti ti-chevron-left" aria-hidden="true"></i></button>'
     +'<div class="pp-title">Connect form to</div></div>'
-    +'<div class="pp-body">'
-    +'<div class="pp-lbl">Forms</div>'+forms
-    +'<div class="pp-lbl" style="margin-top:14px">CMS collections</div>'+cms
-    +'</div>';
+    +'<div class="pp-body">'+html+'</div>';
 }
 function chooseContext(kind,id){
   if(!CF) return;
-  if(kind==='wf'){
-    CF.type='wf';CF.mode='new';CF.editItem=0;
+  if(kind==='wf'||kind==='new-wf'){
+    var f=(kind==='new-wf')?WF.new:WF[id];
+    CF.type='wf';CF.data=f;CF.dest=f.title;CF.icon=f.icon;CF.mode='new';CF.editItem=0;CF.submitLabel=f.sub;
     renderCanvas();selectForm(null);
-    showToast('Connected to Wix Forms');
+    showToast(kind==='new-wf'?'New form created &#8212; connected to Wix Forms':('Connected to Wix Forms &#8212; '+f.title));
   } else {
-    var c=CMS[id]; if(!c) return;
-    CF.type='cms';CF.data=c;CF.dest=c.name;CF.context=c.context;CF.collId=c.id;CF.mode='new';CF.editItem=0;
+    var c=(kind==='new-cms')?CMS.new:CMS[id];
+    CF.type='cms';CF.data=c;CF.dest=c.name;CF.context=c.context;CF.collId=c.id;CF.ctxType=c.ctxType;CF.icon=c.icon;CF.mode='new';CF.editItem=0;CF.submitLabel=c.sub;
     renderCanvas();selectForm(null);
-    showToast('Connected to '+c.name+' collection');
+    showToast(kind==='new-cms'?'New collection created &#8212; form connected':('Connected to '+c.name));
   }
 }
 function openPanel(){document.getElementById('ppanel').classList.add('open');}
@@ -683,7 +697,7 @@ function renderPanelForm(){
   var inner=document.getElementById('ppInner');
   if(CF.type==='cms'){
     var edit=CF.mode==='edit';
-    var ic='ti-tools-kitchen-2';for(var z=0;z<CONTEXTS.length;z++){if(CONTEXTS[z].id===CF.collId){ic=CONTEXTS[z].icon;break;}}
+    var ic=CF.icon||'ti-tools-kitchen-2';
     var seg='<div class="pp-sec"><span class="pp-lbl">What this form does</span>'
       +'<div class="pp-seg"><button class="pp-seg-btn'+(edit?'':' on')+'" onclick="setMode(\'new\')">Add new item</button>'
       +'<button class="pp-seg-btn'+(edit?' on':'')+'" onclick="setMode(\'edit\')">Update existing</button></div></div>';
@@ -697,17 +711,17 @@ function renderPanelForm(){
       +'<div class="pp-body">'
       +'<div class="pp-sec"><span class="pp-lbl">Connect Form to</span>'
       +'<div class="pp-card clickable" onclick="openConnectPicker()"><div class="cic"><i class="ti '+ic+'" aria-hidden="true"></i></div>'
-      +'<div class="ctx"><b>'+CF.context+'</b><span>'+CF.dest+' collection</span></div><i class="ti ti-chevron-right pp-card-chev" aria-hidden="true"></i></div></div>'
+      +'<div class="ctx"><b>'+CF.context+'</b><span>'+CF.ctxType+'</span></div><i class="ti ti-chevron-right pp-card-chev" aria-hidden="true"></i></div></div>'
       +seg+src
-      +'<div class="pp-hint">'+(edit?'The form loads the recipe chosen in the dropdown, lets visitors edit it, and saves changes back.':'All fields save to a new item in the collection. Select a field to see how it maps.')+'</div>'
+      +'<div class="pp-hint">'+(edit?'The form loads the item chosen in the dropdown, lets visitors edit it, and saves changes back.':'All fields save to a new item in this context. Select a field to see how it maps.')+'</div>'
       +'</div>';
   } else {
     inner.innerHTML=
       '<div class="pp-head"><div class="pp-title">Form</div>'
       +'<button class="pp-icbtn" aria-label="More actions"><i class="ti ti-dots" aria-hidden="true"></i></button></div>'
       +'<div class="pp-body"><div class="pp-sec"><span class="pp-lbl">Submissions go to</span>'
-      +'<div class="pp-card clickable" onclick="openConnectPicker()"><div class="cic" style="background:#F0EAFF;color:#7B5EA7"><i class="ti ti-forms" aria-hidden="true"></i></div>'
-      +'<div class="ctx"><b>Wix Forms</b><span>Responses in dashboard</span></div><i class="ti ti-chevron-right pp-card-chev" aria-hidden="true"></i></div>'
+      +'<div class="pp-card clickable" onclick="openConnectPicker()"><div class="cic" style="background:#F0EAFF;color:#7B5EA7"><i class="ti '+(CF.icon||'ti-forms')+'" aria-hidden="true"></i></div>'
+      +'<div class="ctx"><b>'+CF.dest+'</b><span>Wix form</span></div><i class="ti ti-chevron-right pp-card-chev" aria-hidden="true"></i></div>'
       +'<div class="pp-hint">Manage all responses in your Wix Forms dashboard.</div>'
       +'</div></div>';
   }
@@ -739,8 +753,8 @@ function renderPanelButton(){
   if(CF.type==='cms'){
     head+='<span class="pp-snake" title="Connected to CMS">'+snake(18,'#E21E78')+'</span>';
     body='<div class="pp-sec"><span class="pp-lbl">Connect Button to</span>'
-      +'<div class="pp-card"><div class="cic"><i class="ti ti-tools-kitchen-2" aria-hidden="true"></i></div>'
-      +'<div class="ctx"><b>'+CF.context+'</b><span>'+CF.dest+' collection</span></div></div></div>'
+      +'<div class="pp-card"><div class="cic"><i class="ti '+(CF.icon||'ti-tools-kitchen-2')+'" aria-hidden="true"></i></div>'
+      +'<div class="ctx"><b>'+CF.context+'</b><span>'+CF.ctxType+'</span></div></div></div>'
       +'<div class="pp-sec"><span class="pp-lbl">Button label</span><input class="pp-input" value="'+(CF.submitLabel||CF.data.sub)+'"></div>'
       +'<div class="pp-sec"><span class="pp-lbl">On click action</span>'
       +'<div class="pp-bind"><span class="pp-bind-ic">'+snake(15,'#E21E78')+'</span>'
