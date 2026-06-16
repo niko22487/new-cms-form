@@ -714,6 +714,31 @@ function toggleReveal(el,id){
   var off=el.classList.toggle('off');
   el.setAttribute('aria-checked',off?'false':'true');
   if(id){var r=document.getElementById(id);if(r)r.style.display=off?'none':'';}
+  if(CF&&CF.type==='wf'&&CF.curIdx!=null&&(id==='rv-ds'||id==='rv-ph')){
+    var f=CF.data.fields[CF.curIdx];
+    if(id==='rv-ds'){f.description=off?'':(((document.querySelector('#rv-ds textarea')||{}).value)||'');updateFieldTip(CF.curIdx);}
+    else {f.placeholder=off?'':(((document.querySelector('#rv-ph input')||{}).value)||'');updateFieldPh(CF.curIdx);}
+  }
+}
+function wfInput(which,val){
+  if(!CF||CF.type!=='wf'||CF.curIdx==null) return;
+  var f=CF.data.fields[CF.curIdx];
+  if(which==='ph'){f.placeholder=val;updateFieldPh(CF.curIdx);}
+  else {f.description=val;updateFieldTip(CF.curIdx);}
+}
+function updateFieldTip(idx){
+  var cfl=document.querySelector('#form-area .cfl[data-idx="'+idx+'"]');if(!cfl)return;
+  var lbl=cfl.querySelector('.cflabel');if(!lbl)return;
+  var f=CF.data.fields[idx];var ex=lbl.querySelector('.fdesc');
+  if(f.description){
+    if(!ex){ex=document.createElement('span');ex.className='fdesc';ex.innerHTML='<i class="ti ti-info-circle" aria-hidden="true"></i><span class="fdesc-tip"></span>';lbl.appendChild(ex);}
+    ex.querySelector('.fdesc-tip').textContent=f.description;
+  } else if(ex){ex.parentNode.removeChild(ex);}
+}
+function updateFieldPh(idx){
+  var cfl=document.querySelector('#form-area .cfl[data-idx="'+idx+'"]');if(!cfl)return;
+  var f=CF.data.fields[idx];var ctrl=cfl.querySelector('.cfinput,.cfta');
+  if(ctrl)ctrl.setAttribute('placeholder',f.placeholder||(f.l+'…'));
 }
 function propRow(label,editable,on,reveal,rid){
   var tcls='pp-toggle'+(editable?'':' locked')+(on?'':' off');
@@ -760,16 +785,17 @@ function renderPanelForm(){
 function renderPanelField(idx){
   var f=CF.data.fields[idx];
   var wf=(CF.type==='wf');
+  CF.curIdx=idx;
   var path=CF.collId+'.'+fkey(f);
   var valueSec='<div class="pp-sec"><span class="pp-lbl">Value</span>'
     +'<div class="pp-bind"><span class="pp-bind-ic">'+snake(15,'#E21E78')+'</span>'
     +'<span class="pp-bind-path">'+path+'</span></div></div>';
   var titleSec='<div class="pp-sec"><span class="pp-lbl">Field title</span><input class="pp-input" value="'+f.l+'"></div>';
   var phCtrl=wf
-    ? '<input class="pp-input" placeholder="Enter placeholder text" value="'+(f.placeholder||'')+'">'
+    ? '<input class="pp-input" placeholder="Enter placeholder text" value="'+(f.placeholder||'')+'" oninput="wfInput(\'ph\',this.value)">'
     : '<input class="pp-input" readonly value="'+(f.placeholder||'')+'">';
   var dsCtrl=wf
-    ? '<textarea class="pp-input pp-ta" placeholder="Shown in a tooltip on hover">'+(f.description||'')+'</textarea>'
+    ? '<textarea class="pp-input pp-ta" placeholder="Shown in a tooltip on hover" oninput="wfInput(\'ds\',this.value)">'+(f.description||'')+'</textarea>'
     : '<textarea class="pp-input pp-ta" readonly>'+(f.description||'')+'</textarea>';
   var sections=valueSec+titleSec
     +propRow('Placeholder text',wf,!!f.placeholder,phCtrl,'rv-ph')
