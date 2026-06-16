@@ -423,7 +423,7 @@ body{background:#F4F3EF;font-family:var(--font-sans);overflow:hidden;}
       <div class="mb" style="padding-top:10px">
         <div class="listwrap">
           <div class="listitem" onclick="pickCMS('recipes',this)">
-            <div class="liico"><i class="ti ti-tools-kitchen-2" aria-hidden="true"></i></div>
+            <div class="liico"><i class="ti ti-database" aria-hidden="true"></i></div>
             <div class="liinfo"><div class="liname">Recipes</div><div class="limeta">6 fields &#183; recipe name, prep time, cooking time&#8230;</div></div>
             <div class="lichk"><i class="ti ti-check" aria-hidden="true" style="font-size:10px;color:#fff"></i></div>
           </div>
@@ -455,7 +455,7 @@ var WF={
   new:{id:'new',icon:'ti-forms',title:'New Form',sub:'Submit',cls:'wf',fields:[{l:'Name',t:'text'},{l:'Email',t:'text'},{l:'Message',t:'ta'}]}
 };
 var CMS={
-  recipes:{name:'Recipes',id:'recipes',context:'Recipes Item',ctxType:'CMS collection',icon:'ti-tools-kitchen-2',title:'Submit a Recipe',sub:'Submit',singular:'Recipe',cls:'cms',fields:[
+  recipes:{name:'Recipes',id:'recipes',context:'Recipes Item',ctxType:'CMS collection',icon:'ti-database',title:'Submit a Recipe',sub:'Submit',singular:'Recipe',cls:'cms',fields:[
     {l:'Recipe Name',t:'text',key:'recipeName'},
     {l:'Prep Time',t:'half',key:'prepTime'},
     {l:'Cooking Time',t:'half',key:'cookingTime'},
@@ -561,7 +561,7 @@ function fieldHTML(f,idx,item){
   return '<div class="cfl" data-idx="'+idx+'" onclick="selectField(this,event)"><div class="cflabel">'+f.l+'</div>'+inner+'<div class="selframe"><i></i><i></i><i></i><i></i></div></div>';
 }
 function renderForm(data,type,dest){
-  CF={type:type,dest:dest,data:data,context:(data.context||(dest+' Item')),collId:(data.id||dest.toLowerCase().replace(/[^a-z0-9]/g,'')),ctxType:(data.ctxType||'CMS collection'),icon:(data.icon||(type==='wf'?'ti-forms':'ti-tools-kitchen-2')),mode:'new',editItem:0,submitLabel:data.sub};
+  CF={type:type,dest:dest,data:data,context:(data.context||(dest+' Item')),collId:(data.id||dest.toLowerCase().replace(/[^a-z0-9]/g,'')),ctxType:(data.ctxType||'CMS collection'),icon:(data.icon||(type==='wf'?'ti-forms':'ti-database')),mode:'new',editItem:0,submitLabel:data.sub};
   renderCanvas();
   closeAddPanel();closePanel();
   document.getElementById('canvas').scrollTop=0;
@@ -617,7 +617,7 @@ var PICKER=[
     {kind:'new-wf',name:'Create new',icon:'ti-plus'}
   ]},
   {group:'CMS',items:[
-    {kind:'cms',id:'recipes',name:'Recipes Item',desc:'CMS collection',icon:'ti-tools-kitchen-2'},
+    {kind:'cms',id:'recipes',name:'Recipes Item',desc:'CMS collection',icon:'ti-database'},
     {kind:'new-cms',name:'Create New',icon:'ti-plus'}
   ]},
   {group:'Members',items:[
@@ -697,7 +697,7 @@ function renderPanelForm(){
   var inner=document.getElementById('ppInner');
   if(CF.type==='cms'){
     var edit=CF.mode==='edit';
-    var ic=CF.icon||'ti-tools-kitchen-2';
+    var ic=CF.icon||'ti-database';
     var seg='<div class="pp-sec"><span class="pp-lbl">What this form does</span>'
       +'<div class="pp-seg"><button class="pp-seg-btn'+(edit?'':' on')+'" onclick="setMode(\'new\')">Add new item</button>'
       +'<button class="pp-seg-btn'+(edit?' on':'')+'" onclick="setMode(\'edit\')">Update existing</button></div></div>';
@@ -753,7 +753,7 @@ function renderPanelButton(){
   if(CF.type==='cms'){
     head+='<span class="pp-snake" title="Connected to CMS">'+snake(18,'#E21E78')+'</span>';
     body='<div class="pp-sec"><span class="pp-lbl">Connect Button to</span>'
-      +'<div class="pp-card"><div class="cic"><i class="ti '+(CF.icon||'ti-tools-kitchen-2')+'" aria-hidden="true"></i></div>'
+      +'<div class="pp-card"><div class="cic"><i class="ti '+(CF.icon||'ti-database')+'" aria-hidden="true"></i></div>'
       +'<div class="ctx"><b>'+CF.context+'</b><span>'+CF.ctxType+'</span></div></div></div>'
       +'<div class="pp-sec"><span class="pp-lbl">Button label</span><input class="pp-input" value="'+(CF.submitLabel||CF.data.sub)+'"></div>'
       +'<div class="pp-sec"><span class="pp-lbl">On click action</span>'
