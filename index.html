@@ -147,6 +147,9 @@ body{background:#F4F3EF;font-family:var(--font-sans);overflow:hidden;}
 .pp-body{flex:1;overflow-y:auto;padding:14px 12px;}
 .pp-sec{margin-bottom:16px;}
 .pp-lbl{font-size:11px;color:#6B7280;font-weight:500;margin-bottom:7px;display:block;}
+.pp-lblrow{display:flex;align-items:baseline;justify-content:space-between;}
+.pp-link{border:none;background:none;color:#116DFF;font-size:11px;font-weight:500;cursor:pointer;padding:0;}
+.pp-link:hover{text-decoration:underline;}
 .pp-card{display:flex;align-items:center;gap:10px;border:1px solid #E5E5EA;border-radius:8px;padding:9px 10px;background:#fff;}
 .pp-card .cic{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;background:#FCE7F1;color:#E21E78;}
 .pp-card .ctx{flex:1;min-width:0;}
@@ -589,6 +592,20 @@ function onPickItem(el){
   renderCanvas();
   if(wasOpen) selectForm(null);
 }
+function disconnectToWF(){
+  if(!CF) return;
+  var from=CF.dest;
+  CF.type='wf';CF.mode='new';CF.editItem=0;
+  renderCanvas();selectForm(null);
+  showToast('Disconnected from '+from+' &#8212; submissions now go to Wix Forms');
+}
+function reconnectToCMS(){
+  if(!CF) return;
+  var c=CMS.recipes;
+  CF.type='cms';CF.data=c;CF.dest=c.name;CF.context=c.context;CF.collId=c.id;CF.mode='new';CF.editItem=0;
+  renderCanvas();selectForm(null);
+  showToast('Connected to '+c.name+' collection');
+}
 function openPanel(){document.getElementById('ppanel').classList.add('open');}
 function closePanel(){document.getElementById('ppanel').classList.remove('open');}
 function clearSel(){
@@ -629,7 +646,7 @@ function renderPanelForm(){
       +'<button class="pp-icbtn" aria-label="More actions"><i class="ti ti-dots" aria-hidden="true"></i></button>'
       +'<span class="pp-snake" title="Connected to CMS">'+snake(18,'#E21E78')+'</span></div>'
       +'<div class="pp-body">'
-      +'<div class="pp-sec"><span class="pp-lbl">Connect Form to</span>'
+      +'<div class="pp-sec"><div class="pp-lblrow"><span class="pp-lbl">Connect Form to</span><button class="pp-link" onclick="disconnectToWF()">Disconnect</button></div>'
       +'<div class="pp-card"><div class="cic"><i class="ti ti-tools-kitchen-2" aria-hidden="true"></i></div>'
       +'<div class="ctx"><b>'+CF.context+'</b><span>'+CF.dest+' collection</span></div></div></div>'
       +seg+src
@@ -639,7 +656,7 @@ function renderPanelForm(){
     inner.innerHTML=
       '<div class="pp-head"><div class="pp-title">Form</div>'
       +'<button class="pp-icbtn" aria-label="More actions"><i class="ti ti-dots" aria-hidden="true"></i></button></div>'
-      +'<div class="pp-body"><div class="pp-sec"><span class="pp-lbl">Submissions go to</span>'
+      +'<div class="pp-body"><div class="pp-sec"><div class="pp-lblrow"><span class="pp-lbl">Submissions go to</span><button class="pp-link" onclick="reconnectToCMS()">Connect to CMS</button></div>'
       +'<div class="pp-card"><div class="cic" style="background:#F0EAFF;color:#7B5EA7"><i class="ti ti-forms" aria-hidden="true"></i></div>'
       +'<div class="ctx"><b>Wix Forms</b><span>Responses in dashboard</span></div></div>'
       +'<div class="pp-hint">Manage all responses in your Wix Forms dashboard.</div>'
