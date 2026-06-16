@@ -155,6 +155,9 @@ body{background:#F4F3EF;font-family:var(--font-sans);overflow:hidden;}
 .pp-card .ctx{flex:1;min-width:0;}
 .pp-card .ctx b{font-size:12px;font-weight:500;color:#17191C;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .pp-card .ctx span{font-size:11px;color:#6B7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;}
+.pp-card.clickable{cursor:pointer;}
+.pp-card.clickable:hover{border-color:#C9CDD3;background:#FAFAFA;}
+.pp-card-chev{color:#9CA3AF;font-size:16px;flex-shrink:0;}
 .pp-bind{display:flex;align-items:center;gap:8px;border:1px solid #F3C9DD;background:#FDF1F6;border-radius:8px;padding:10px;}
 .pp-bind-ic{display:flex;align-items:center;justify-content:center;width:20px;flex-shrink:0;}
 .pp-bind-path{font-family:var(--font-mono);font-size:12px;color:#B0185E;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -470,6 +473,25 @@ var CMS={
     {recipeName:'Berry Smoothie',prepTime:'5 min',cookingTime:'—',ingredients:'Mixed berries, banana, Greek yogurt, honey, ice',instructions:'Add all the ingredients to a blender and blend until smooth.',photos:'berry-smoothie.jpg'},
     {recipeName:'Veggie Curry',prepTime:'15 min',cookingTime:'30 min',ingredients:'Onion, garlic, mixed vegetables, coconut milk, curry paste',instructions:'Saute the onion and garlic, add the vegetables, stir in the curry paste and coconut milk, then simmer for 30 minutes.',photos:'veggie-curry.jpg'}
   ]},
+  members:{name:'Members',id:'members',context:'Members Item',title:'Add a Member',sub:'Submit',singular:'Member',cls:'cms',fields:[
+    {l:'Full Name',t:'text',key:'fullName'},
+    {l:'Email',t:'text',key:'email'},
+    {l:'Phone',t:'text',key:'phone'},
+    {l:'Bio',t:'ta',key:'bio'}
+  ],items:[
+    {fullName:'Maya Cohen',email:'maya@vedayoga.com',phone:'+1 555 0182',bio:'Yoga instructor and weekend home cook.'},
+    {fullName:'Daniel Levi',email:'daniel@vedayoga.com',phone:'+1 555 0148',bio:'Member since 2023. Loves vinyasa flow.'}
+  ]},
+  blog:{name:'Blog Posts',id:'blog',context:'Blog Posts Item',title:'Write a Post',sub:'Publish',singular:'Post',cls:'cms',fields:[
+    {l:'Title',t:'text',key:'title'},
+    {l:'Author',t:'text',key:'author'},
+    {l:'Excerpt',t:'ta',key:'excerpt'},
+    {l:'Content',t:'ta',key:'content'},
+    {l:'Cover Image',t:'file',key:'cover'}
+  ],items:[
+    {title:'5 Morning Stretches',author:'Maya Cohen',excerpt:'Start your day grounded and limber.',content:'Begin standing tall, then fold forward and breathe...',cover:'morning-stretches.jpg'},
+    {title:'Eating Mindfully',author:'Daniel Levi',excerpt:'Slow down and savor each bite.',content:'Mindful eating starts before the first bite...',cover:'mindful-eating.jpg'}
+  ]},
   new:{name:'New Collection',id:'collection',context:'Collection Item',title:'New Form',sub:'Submit',singular:'Item',cls:'cms',fields:[
     {l:'Field 1',t:'text',key:'field1'},{l:'Field 2',t:'text',key:'field2'}
   ]}
@@ -592,19 +614,45 @@ function onPickItem(el){
   renderCanvas();
   if(wasOpen) selectForm(null);
 }
-function disconnectToWF(){
+var CONTEXTS=[
+  {kind:'wf',id:'wf',name:'Wix Forms',type:'Form submissions',icon:'ti-forms',tint:'wf'},
+  {kind:'cms',id:'recipes',name:'Recipes',type:'CMS collection',icon:'ti-tools-kitchen-2',tint:'cms'},
+  {kind:'cms',id:'members',name:'Members',type:'CMS collection',icon:'ti-users',tint:'cms'},
+  {kind:'cms',id:'blog',name:'Blog Posts',type:'CMS collection',icon:'ti-file-text',tint:'cms'}
+];
+function openConnectPicker(){
   if(!CF) return;
-  var from=CF.dest;
-  CF.type='wf';CF.mode='new';CF.editItem=0;
-  renderCanvas();selectForm(null);
-  showToast('Disconnected from '+from+' &#8212; submissions now go to Wix Forms');
+  var cur=(CF.type==='wf')?'wf':CF.collId;
+  function row(c){
+    var on=(c.id===cur)?' sel':'';
+    var st=c.tint==='cms'?'background:#FCE7F1;color:#E21E78':'background:#F0EAFF;color:#7B5EA7';
+    return '<div class="listitem'+on+'" onclick="chooseContext(\''+c.kind+'\',\''+c.id+'\')">'
+      +'<div class="liico" style="'+st+'"><i class="ti '+c.icon+'" aria-hidden="true"></i></div>'
+      +'<div class="liinfo"><div class="liname">'+c.name+'</div><div class="limeta">'+c.type+'</div></div>'
+      +'<div class="lichk"><i class="ti ti-check" aria-hidden="true" style="font-size:10px;color:#fff"></i></div></div>';
+  }
+  var forms='',cms='';
+  for(var k=0;k<CONTEXTS.length;k++){ if(CONTEXTS[k].kind==='wf') forms+=row(CONTEXTS[k]); else cms+=row(CONTEXTS[k]); }
+  document.getElementById('ppInner').innerHTML=
+    '<div class="pp-head"><button class="pp-back" onclick="selectFormFromPanel()" aria-label="Back to form"><i class="ti ti-chevron-left" aria-hidden="true"></i></button>'
+    +'<div class="pp-title">Connect form to</div></div>'
+    +'<div class="pp-body">'
+    +'<div class="pp-lbl">Forms</div>'+forms
+    +'<div class="pp-lbl" style="margin-top:14px">CMS collections</div>'+cms
+    +'</div>';
 }
-function reconnectToCMS(){
+function chooseContext(kind,id){
   if(!CF) return;
-  var c=CMS.recipes;
-  CF.type='cms';CF.data=c;CF.dest=c.name;CF.context=c.context;CF.collId=c.id;CF.mode='new';CF.editItem=0;
-  renderCanvas();selectForm(null);
-  showToast('Connected to '+c.name+' collection');
+  if(kind==='wf'){
+    CF.type='wf';CF.mode='new';CF.editItem=0;
+    renderCanvas();selectForm(null);
+    showToast('Connected to Wix Forms');
+  } else {
+    var c=CMS[id]; if(!c) return;
+    CF.type='cms';CF.data=c;CF.dest=c.name;CF.context=c.context;CF.collId=c.id;CF.mode='new';CF.editItem=0;
+    renderCanvas();selectForm(null);
+    showToast('Connected to '+c.name+' collection');
+  }
 }
 function openPanel(){document.getElementById('ppanel').classList.add('open');}
 function closePanel(){document.getElementById('ppanel').classList.remove('open');}
@@ -635,6 +683,7 @@ function renderPanelForm(){
   var inner=document.getElementById('ppInner');
   if(CF.type==='cms'){
     var edit=CF.mode==='edit';
+    var ic='ti-tools-kitchen-2';for(var z=0;z<CONTEXTS.length;z++){if(CONTEXTS[z].id===CF.collId){ic=CONTEXTS[z].icon;break;}}
     var seg='<div class="pp-sec"><span class="pp-lbl">What this form does</span>'
       +'<div class="pp-seg"><button class="pp-seg-btn'+(edit?'':' on')+'" onclick="setMode(\'new\')">Add new item</button>'
       +'<button class="pp-seg-btn'+(edit?' on':'')+'" onclick="setMode(\'edit\')">Update existing</button></div></div>';
@@ -646,9 +695,9 @@ function renderPanelForm(){
       +'<button class="pp-icbtn" aria-label="More actions"><i class="ti ti-dots" aria-hidden="true"></i></button>'
       +'<span class="pp-snake" title="Connected to CMS">'+snake(18,'#E21E78')+'</span></div>'
       +'<div class="pp-body">'
-      +'<div class="pp-sec"><div class="pp-lblrow"><span class="pp-lbl">Connect Form to</span><button class="pp-link" onclick="disconnectToWF()">Disconnect</button></div>'
-      +'<div class="pp-card"><div class="cic"><i class="ti ti-tools-kitchen-2" aria-hidden="true"></i></div>'
-      +'<div class="ctx"><b>'+CF.context+'</b><span>'+CF.dest+' collection</span></div></div></div>'
+      +'<div class="pp-sec"><span class="pp-lbl">Connect Form to</span>'
+      +'<div class="pp-card clickable" onclick="openConnectPicker()"><div class="cic"><i class="ti '+ic+'" aria-hidden="true"></i></div>'
+      +'<div class="ctx"><b>'+CF.context+'</b><span>'+CF.dest+' collection</span></div><i class="ti ti-chevron-right pp-card-chev" aria-hidden="true"></i></div></div>'
       +seg+src
       +'<div class="pp-hint">'+(edit?'The form loads the recipe chosen in the dropdown, lets visitors edit it, and saves changes back.':'All fields save to a new item in the collection. Select a field to see how it maps.')+'</div>'
       +'</div>';
@@ -656,9 +705,9 @@ function renderPanelForm(){
     inner.innerHTML=
       '<div class="pp-head"><div class="pp-title">Form</div>'
       +'<button class="pp-icbtn" aria-label="More actions"><i class="ti ti-dots" aria-hidden="true"></i></button></div>'
-      +'<div class="pp-body"><div class="pp-sec"><div class="pp-lblrow"><span class="pp-lbl">Submissions go to</span><button class="pp-link" onclick="reconnectToCMS()">Connect to CMS</button></div>'
-      +'<div class="pp-card"><div class="cic" style="background:#F0EAFF;color:#7B5EA7"><i class="ti ti-forms" aria-hidden="true"></i></div>'
-      +'<div class="ctx"><b>Wix Forms</b><span>Responses in dashboard</span></div></div>'
+      +'<div class="pp-body"><div class="pp-sec"><span class="pp-lbl">Submissions go to</span>'
+      +'<div class="pp-card clickable" onclick="openConnectPicker()"><div class="cic" style="background:#F0EAFF;color:#7B5EA7"><i class="ti ti-forms" aria-hidden="true"></i></div>'
+      +'<div class="ctx"><b>Wix Forms</b><span>Responses in dashboard</span></div><i class="ti ti-chevron-right pp-card-chev" aria-hidden="true"></i></div>'
       +'<div class="pp-hint">Manage all responses in your Wix Forms dashboard.</div>'
       +'</div></div>';
   }
