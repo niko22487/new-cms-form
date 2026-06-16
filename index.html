@@ -609,21 +609,22 @@ function renderPanelButton(){
   var head='<div class="pp-head"><button class="pp-back" onclick="selectFormFromPanel()" aria-label="Back to form"><i class="ti ti-chevron-left" aria-hidden="true"></i></button>'
     +'<div class="pp-title">Properties</div>'
     +'<button class="pp-icbtn" aria-label="More actions"><i class="ti ti-dots" aria-hidden="true"></i></button>';
-  var actionSec;
+  var body;
   if(CF.type==='cms'){
     head+='<span class="pp-snake" title="Connected to CMS">'+snake(18,'#E21E78')+'</span>';
-    actionSec='<div class="pp-sec"><span class="pp-lbl">Click action</span>'
+    body='<div class="pp-sec"><span class="pp-lbl">Connect Button to</span>'
+      +'<div class="pp-card"><div class="cic"><i class="ti ti-tools-kitchen-2" aria-hidden="true"></i></div>'
+      +'<div class="ctx"><b>'+CF.context+'</b><span>'+CF.dest+' collection</span></div></div></div>'
+      +'<div class="pp-sec"><span class="pp-lbl">Button label</span><input class="pp-input" value="'+CF.data.sub+'"></div>'
+      +'<div class="pp-sec"><span class="pp-lbl">On click action</span>'
       +'<div class="pp-bind"><span class="pp-bind-ic">'+snake(15,'#E21E78')+'</span>'
-      +'<span class="pp-bind-txt">Submit to '+CF.dest+'</span></div></div>';
+      +'<span class="pp-bind-path">'+CF.collId+'.item.save</span></div></div>';
   } else {
-    actionSec='<div class="pp-sec"><span class="pp-lbl">Click action</span><div class="pp-type"><i class="ti ti-send" aria-hidden="true"></i> Submit form</div></div>';
+    body='<div class="pp-sec"><span class="pp-lbl">Button label</span><input class="pp-input" value="'+CF.data.sub+'"></div>'
+      +'<div class="pp-sec"><span class="pp-lbl">On click action</span><div class="pp-type"><i class="ti ti-send" aria-hidden="true"></i> Submit form</div></div>';
   }
   head+='</div>';
-  document.getElementById('ppInner').innerHTML=head
-    +'<div class="pp-body">'
-    +'<div class="pp-sec"><span class="pp-lbl">Button text</span><input class="pp-input" value="'+CF.data.sub+'"></div>'
-    +actionSec
-    +'</div>';
+  document.getElementById('ppInner').innerHTML=head+'<div class="pp-body">'+body+'</div>';
 }
 var toastTimer;
 function showToast(msg){
