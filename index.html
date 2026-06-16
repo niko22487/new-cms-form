@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wix Forms × CMS — Connect a form prototype</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.30.0/dist/tabler-icons.min.css">
+<style>
+:root{
+  --color-border-tertiary: rgba(0,0,0,0.15);
+  --border-radius-lg: 12px;
+  --font-sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --font-mono: ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:#E9E7E1;min-height:100vh;font-family:var(--font-sans);padding:26px 18px 40px;display:flex;flex-direction:column;align-items:center;gap:12px;}
+.proto-cap{font-size:12.5px;color:#6B7280;text-align:center;}
+.proto-cap b{color:#17191C;font-weight:600;}
+.stage{width:100%;max-width:1180px;}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.ew{position:relative;width:100%;border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);overflow:hidden;background:#F4F3EF;font-family:var(--font-sans);font-size:13px;color:#17191C;min-height:580px;line-height:1.4;user-select:none;box-shadow:0 6px 30px rgba(0,0,0,0.10);}
+.ed-tb{display:flex;align-items:center;height:38px;padding:0 10px;background:#fff;border-bottom:1px solid #E5E5EA;gap:5px;flex-shrink:0;}
+.tbl{display:flex;align-items:center;gap:3px;}
+.tbc{flex:1;display:flex;justify-content:center;align-items:center;gap:4px;}
+.tbr{display:flex;align-items:center;gap:4px;}
+.chip{height:24px;padding:0 8px;border:1px solid #E5E5EA;border-radius:4px;background:#fff;font-size:11px;color:#17191C;display:flex;align-items:center;gap:3px;}
+.chip.pr{background:#116DFF;border-color:#116DFF;color:#fff;font-weight:500;}
+.chip.up{background:#FFFBE6;border-color:#F5C400;color:#7A5700;}
+.tbd{width:1px;height:14px;background:#E5E5EA;margin:0 2px;}
+.tico{width:24px;height:24px;border-radius:3px;border:none;background:transparent;display:flex;align-items:center;justify-content:center;color:#6B7280;cursor:pointer;font-size:16px;}
+.tico:hover{background:#F3F4F6;}
+.tbtab{font-size:12px;padding:3px 7px;border-radius:4px;color:#6B7280;cursor:pointer;}
+.tbtab.on{color:#116DFF;font-weight:500;background:#EEF3FF;}
+.edbody{display:flex;height:540px;overflow:hidden;}
+.nav{width:40px;flex-shrink:0;background:#fff;border-right:1px solid #E5E5EA;display:flex;flex-direction:column;align-items:center;padding:4px 0;gap:2px;z-index:5;}
+.navi{width:32px;height:32px;border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6B7280;font-size:18px;border:none;background:transparent;}
+.navi:hover{background:#F3F4F6;}
+.navi.on{background:#EEF3FF;color:#116DFF;}
+.ap{width:220px;flex-shrink:0;background:#fff;border-right:1px solid #E5E5EA;display:flex;flex-direction:column;overflow:hidden;transition:width .22s ease,opacity .16s ease;}
+.ap.closed{width:0;opacity:0;border-right:none;pointer-events:none;}
+.aptabs{display:flex;padding:8px 10px 0;gap:2px;flex-shrink:0;border-bottom:1px solid #E5E5EA;}
+.aptab{font-size:12px;padding:5px 8px;cursor:pointer;color:#6B7280;border-bottom:2px solid transparent;margin-bottom:-1px;}
+.aptab.on{color:#17191C;font-weight:500;border-bottom-color:#116DFF;}
+.apsearch{margin:8px 10px 6px;height:26px;border:1px solid #E5E5EA;border-radius:4px;padding:0 8px;font-size:11px;color:#17191C;background:#F9F9F9;outline:none;flex-shrink:0;width:calc(100% - 20px);}
+.apcols{display:flex;flex:1;overflow:hidden;}
+.apcat-list{width:72px;flex-shrink:0;overflow-y:auto;border-right:1px solid #F0F0F0;padding:4px 0;}
+.apcat{padding:7px 6px 7px 10px;font-size:11px;color:#6B7280;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.apcat:hover{background:#F9F9F9;color:#17191C;}
+.apcat.on{background:#EEF3FF;color:#116DFF;font-weight:500;}
+.apcontent{flex:1;overflow-y:auto;padding:8px 0;}
+.apsh{display:flex;justify-content:space-between;align-items:center;padding:4px 10px;font-size:11px;font-weight:500;color:#6B7280;text-transform:uppercase;letter-spacing:0.4px;}
+.apsa{font-size:11px;color:#116DFF;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;}
+.apdiv{height:1px;background:#F0F0F0;margin:6px 10px;}
+.fa{display:flex;align-items:center;gap:8px;padding:7px 10px;cursor:pointer;border-radius:4px;margin:0 4px;}
+.fa:hover{background:#F3F4F6;}
+.fa.hot:hover{background:#EEF3FF;}
+.fai{width:28px;height:28px;border-radius:5px;background:#EEF3FF;display:flex;align-items:center;justify-content:center;color:#116DFF;flex-shrink:0;font-size:16px;}
+.fai.ai{background:#F0F7FF;color:#0066CC;}
+.fat{flex:1;min-width:0;}
+.fat-t{font-size:12px;font-weight:500;color:#17191C;}
+.fat-d{font-size:10px;color:#6B7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:0 10px;}
+.tc{height:50px;border-radius:4px;border:1px solid #E5E5EA;}
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:0 6px;}
+.fi{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:7px 4px;border-radius:4px;cursor:pointer;}
+.fi:hover{background:#F9F9F9;}
+.fi span{font-size:10px;color:#6B7280;text-align:center;}
+.fi i{font-size:18px;color:#9CA3AF;}
+.canvas{flex:1;overflow-y:auto;overscroll-behavior:contain;background:#F4F3EF;position:relative;display:flex;flex-direction:column;align-items:center;padding:16px 12px 28px;scrollbar-width:thin;scrollbar-color:#BFC3C9 transparent;}
+.canvas::-webkit-scrollbar{width:12px;}
+.canvas::-webkit-scrollbar-thumb{background:#BFC3C9;border-radius:6px;border:3px solid #F4F3EF;background-clip:padding-box;}
+.canvas::-webkit-scrollbar-thumb:hover{background:#A8ACB2;background-clip:padding-box;}
+.canvas::-webkit-scrollbar-track{background:transparent;}
+.csite{width:100%;background:#fff;border-radius:2px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+.snav{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#F9F7F3;border-bottom:1px solid rgba(0,0,0,0.06);}
+.slogo{font-size:13px;font-weight:600;color:#5A4A35;}
+.slinks{display:flex;gap:14px;}
+.slink{font-size:11px;color:#5A4A35;}
+.spricing{background:#F9F7F3;padding:20px 16px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;}
+.pcrow{display:flex;gap:12px;width:100%;}
+.pc{flex:1;background:#fff;border-radius:6px;padding:14px;text-align:center;border:1px solid #EDE9E0;}
+.pprice{font-size:20px;font-weight:300;color:#17191C;}
+.pname{font-size:10px;color:#8B7355;margin:2px 0 10px;}
+.pbtn{width:100%;height:28px;border:none;border-radius:4px;background:#C9956D;color:#fff;font-size:11px;cursor:pointer;}
+.cform{width:100%;border-radius:6px;border:2px solid #116DFF;background:#fff;padding:14px 14px 14px;position:relative;animation:fa 0.3s ease;cursor:pointer;}
+.cform.cms{border-color:#E21E78;}
+@keyframes fa{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.cbadge{position:absolute;top:-10px;left:12px;padding:2px 8px;border-radius:10px;background:#116DFF;color:#fff;font-size:10px;font-weight:500;display:flex;align-items:center;gap:4px;z-index:4;}
+.cbadge.cms{background:#E21E78;}
+.ctitle{font-size:13px;font-weight:500;color:#17191C;margin:8px 0 12px;}
+.cfl{margin-bottom:8px;position:relative;cursor:pointer;}
+.cfrow{display:flex;gap:8px;}
+.cfrow .cfl{flex:1;}
+.cflabel{font-size:11px;color:#6B7280;font-weight:500;margin-bottom:3px;}
+.cfinput{width:100%;height:26px;border:1px solid #E5E5EA;border-radius:3px;background:#F9F9F9;padding:0 8px;font-size:11px;color:#9CA3AF;box-sizing:border-box;}
+.cfta{width:100%;height:50px;border:1px solid #E5E5EA;border-radius:3px;background:#F9F9F9;padding:6px 8px;font-size:11px;color:#9CA3AF;resize:none;box-sizing:border-box;}
+.cffile{width:100%;border:1px dashed #C9CDD3;border-radius:3px;background:#F9F9F9;padding:11px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;color:#9CA3AF;box-sizing:border-box;}
+.cform .cfinput,.cform .cfta,.cform .cffile,.cform .cfsub{pointer-events:none;}
+.selframe{position:absolute;inset:-3px;border:1.5px solid #116DFF;border-radius:2px;display:none;pointer-events:none;z-index:3;}
+.cfl.sel .selframe{display:block;}
+.cform.cms .selframe{border-color:#E21E78;}
+.selframe i{position:absolute;width:6px;height:6px;background:#fff;border:1px solid #116DFF;border-radius:1px;}
+.cform.cms .selframe i{border-color:#E21E78;}
+.selframe i:nth-child(1){top:-4px;left:-4px;}
+.selframe i:nth-child(2){top:-4px;right:-4px;}
+.selframe i:nth-child(3){bottom:-4px;left:-4px;}
+.selframe i:nth-child(4){bottom:-4px;right:-4px;}
+.formframe{position:absolute;inset:-1px;display:none;pointer-events:none;z-index:5;}
+.cform.sel .formframe{display:block;}
+.formframe i{position:absolute;width:7px;height:7px;background:#fff;border:1px solid #116DFF;border-radius:1px;}
+.cform.cms .formframe i{border-color:#E21E78;}
+.formframe i:nth-child(1){top:-4px;left:-4px;}
+.formframe i:nth-child(2){top:-4px;right:-4px;}
+.formframe i:nth-child(3){bottom:-4px;left:-4px;}
+.formframe i:nth-child(4){bottom:-4px;right:-4px;}
+.formframe i:nth-child(5){top:-4px;left:calc(50% - 3.5px);}
+.formframe i:nth-child(6){bottom:-4px;left:calc(50% - 3.5px);}
+.formframe i:nth-child(7){left:-4px;top:calc(50% - 3.5px);}
+.formframe i:nth-child(8){right:-4px;top:calc(50% - 3.5px);}
+.cfsub{width:100%;height:30px;border:none;border-radius:4px;background:#C9956D;color:#fff;font-size:12px;font-weight:500;margin-top:6px;cursor:pointer;}
+.cfsub.wf{background:#116DFF;}
+.cfsub.cms{background:#C9956D;}
+.cfl-sub{margin-top:8px;}
+.cfl-sub .cfsub{margin-top:0;}
+.ppanel{width:0;flex-shrink:0;background:#fff;border-left:1px solid #E5E5EA;overflow:hidden;transition:width .2s ease;}
+.ppanel.open{width:286px;}
+.pp-inner{width:286px;height:100%;display:flex;flex-direction:column;}
+.pp-head{display:flex;align-items:center;gap:6px;padding:11px 12px;border-bottom:1px solid #F0F0F0;flex-shrink:0;}
+.pp-back{width:24px;height:24px;border:none;background:transparent;cursor:pointer;color:#6B7280;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:17px;flex-shrink:0;}
+.pp-back:hover{background:#F3F4F6;}
+.pp-title{font-size:14px;font-weight:500;color:#17191C;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pp-icbtn{width:26px;height:26px;border:none;background:transparent;cursor:pointer;color:#6B7280;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:18px;flex-shrink:0;}
+.pp-icbtn:hover{background:#F3F4F6;}
+.pp-snake{display:flex;align-items:center;justify-content:center;width:24px;flex-shrink:0;}
+.pp-body{flex:1;overflow-y:auto;padding:14px 12px;}
+.pp-sec{margin-bottom:16px;}
+.pp-lbl{font-size:11px;color:#6B7280;font-weight:500;margin-bottom:7px;display:block;}
+.pp-card{display:flex;align-items:center;gap:10px;border:1px solid #E5E5EA;border-radius:8px;padding:9px 10px;background:#fff;}
+.pp-card .cic{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;background:#FCE7F1;color:#E21E78;}
+.pp-card .ctx{flex:1;min-width:0;}
+.pp-card .ctx b{font-size:12px;font-weight:500;color:#17191C;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pp-card .ctx span{font-size:11px;color:#6B7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;}
+.pp-bind{display:flex;align-items:center;gap:8px;border:1px solid #F3C9DD;background:#FDF1F6;border-radius:8px;padding:10px;}
+.pp-bind-ic{display:flex;align-items:center;justify-content:center;width:20px;flex-shrink:0;}
+.pp-bind-path{font-family:var(--font-mono);font-size:12px;color:#B0185E;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pp-bind-txt{font-size:12px;color:#B0185E;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pp-input{width:100%;height:30px;border:1px solid #E5E5EA;border-radius:5px;padding:0 9px;font-size:12px;color:#17191C;background:#fff;box-sizing:border-box;outline:none;}
+.pp-input:focus{border-color:#116DFF;}
+.pp-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;}
+.pp-row>span{font-size:12px;color:#17191C;}
+.pp-toggle{width:34px;height:20px;border-radius:10px;background:#116DFF;position:relative;cursor:pointer;flex-shrink:0;}
+.pp-toggle::after{content:"";position:absolute;top:2px;left:16px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s;}
+.pp-toggle.off{background:#D1D5DB;}
+.pp-toggle.off::after{left:2px;}
+.pp-type{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#17191C;background:#F3F4F6;padding:6px 10px;border-radius:6px;}
+.pp-hint{font-size:11px;color:#9CA3AF;line-height:1.5;margin-top:9px;}
+.overlay{position:absolute;inset:0;background:rgba(0,0,0,0.42);display:none;align-items:center;justify-content:center;z-index:200;}
+.overlay.vis{display:flex;}
+.modal{background:#fff;border-radius:10px;width:460px;max-width:96%;overflow:hidden;}
+.mh{padding:16px 18px 12px;border-bottom:1px solid #E5E5EA;display:flex;justify-content:space-between;align-items:flex-start;}
+.mt{font-size:15px;font-weight:500;color:#17191C;}
+.ms{font-size:12px;color:#6B7280;margin-top:3px;max-width:370px;}
+.mx{width:22px;height:22px;border-radius:3px;border:none;background:transparent;cursor:pointer;color:#6B7280;font-size:18px;display:flex;align-items:center;justify-content:center;}
+.mx:hover{background:#F3F4F6;}
+.mb{padding:16px 18px;}
+.mf{padding:12px 18px;border-top:1px solid #E5E5EA;display:flex;align-items:center;justify-content:flex-end;gap:8px;}
+.dots{display:flex;gap:4px;margin-right:auto;}
+.dot{width:6px;height:6px;border-radius:50%;background:#E5E5EA;}
+.dot.on{width:16px;border-radius:3px;background:#116DFF;}
+.btn{height:30px;padding:0 14px;border-radius:4px;font-size:12px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:4px;border:1px solid #E5E5EA;background:#fff;color:#17191C;}
+.btn:hover{background:#F3F4F6;}
+.btnp{background:#116DFF;border-color:#116DFF;color:#fff;}
+.btnp:hover:not([disabled]){background:#0D57CC;}
+.btnp[disabled]{background:#BDD0FF;border-color:#BDD0FF;cursor:not-allowed;}
+.chrow{display:flex;gap:10px;}
+.chcard{flex:1;border:2px solid #E5E5EA;border-radius:8px;padding:14px;cursor:pointer;position:relative;transition:border-color 0.12s,background 0.12s;}
+.chcard:hover{border-color:#BDD0FF;background:#FAFBFF;}
+.chcard.sel{border-color:#116DFF;background:#EEF3FF;}
+.chico{width:36px;height:36px;border-radius:7px;display:flex;align-items:center;justify-content:center;margin-bottom:9px;font-size:20px;}
+.chico.wf{background:#F0EAFF;color:#7B5EA7;}
+.chico.cms{background:#FCE7F1;color:#E21E78;}
+.cht{font-size:13px;font-weight:500;color:#17191C;margin-bottom:4px;}
+.chd{font-size:11px;color:#6B7280;line-height:1.5;}
+.chtags{display:flex;flex-wrap:wrap;gap:3px;margin-top:8px;}
+.chtag{font-size:10px;padding:2px 5px;border-radius:3px;background:#F3F4F6;color:#6B7280;}
+.cchk{position:absolute;top:8px;right:8px;width:16px;height:16px;border-radius:50%;background:#116DFF;display:none;align-items:center;justify-content:center;}
+.chcard.sel .cchk{display:flex;}
+.listitem{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:6px;cursor:pointer;border:1px solid transparent;}
+.listitem:hover{background:#F9F9F9;}
+.listitem.sel{background:#EEF3FF;border-color:#116DFF;}
+.liico{width:30px;height:30px;border-radius:5px;background:#F3F4F6;display:flex;align-items:center;justify-content:center;color:#6B7280;font-size:16px;flex-shrink:0;}
+.listitem.sel .liico{background:#EEF3FF;color:#116DFF;}
+.liinfo{flex:1;min-width:0;}
+.liname{font-size:13px;font-weight:500;color:#17191C;}
+.limeta{font-size:11px;color:#6B7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lichk{width:16px;height:16px;border-radius:50%;background:#116DFF;display:none;align-items:center;justify-content:center;}
+.listitem.sel .lichk{display:flex;}
+.linew{display:flex;align-items:center;gap:8px;padding:11px 12px;color:#116DFF;cursor:pointer;font-size:12px;font-weight:500;border-top:1px solid #F0F0F0;margin-top:6px;border-radius:6px;}
+.linew:hover{background:#EEF3FF;}
+.listwrap{max-height:240px;overflow-y:auto;}
+.toast{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:#17191C;color:#fff;font-size:12px;font-weight:500;padding:7px 14px;border-radius:20px;white-space:nowrap;display:none;align-items:center;gap:6px;z-index:300;animation:tin 0.2s ease;}
+@keyframes tin{from{opacity:0;transform:translateX(-50%) translateY(5px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.toast.vis{display:flex;}
+</style>
+</head>
+<body>
+
+<div class="proto-cap">Open the <b>+</b> panel → <b>Forms</b> → <b>Create new Form</b> to start. Choose <b>CMS Collection → Recipes</b> to see the connection.</div>
+
+<div class="stage">
+<h2 class="sr-only">Interactive prototype: a Wix Editor form connected to the Recipes CMS collection. Fields and the Submit button are individually selectable with a pink frame and each opens a Properties panel on the right.</h2>
+
+<div class="ew" id="ew">
+
+<div class="ed-tb">
+  <div class="tbl">
+    <svg width="20" height="20" viewBox="0 0 20 20"><rect width="20" height="20" rx="3" fill="#1B1B1B"/><text x="10" y="14.5" text-anchor="middle" fill="white" font-size="8" font-weight="bold" font-family="Arial,sans-serif">wix</text></svg>
+    <span style="font-size:11px;color:#6B7280;margin:0 2px">&#8249;</span>
+    <span style="font-size:12px;font-weight:500">Veda Yoga</span>
+    <span style="font-size:11px;color:#6B7280;margin:0 2px">&#8250;</span>
+    <div class="tbtab on">Design</div>
+    <div style="width:1px;height:14px;background:#E5E5EA;margin:0 2px"></div>
+    <div class="tbtab">Code</div>
+  </div>
+  <div class="tbc">
+    <div class="chip">Book Online <i class="ti ti-chevron-down" aria-hidden="true" style="font-size:11px;margin-left:1px"></i></div>
+    <div class="tbd"></div>
+    <button class="tico" aria-label="Mobile"><i class="ti ti-device-mobile" aria-hidden="true"></i></button>
+    <button class="tico" aria-label="Desktop" style="color:#17191C"><i class="ti ti-device-desktop" aria-hidden="true"></i></button>
+    <div class="chip">Fit (100%) <i class="ti ti-chevron-down" aria-hidden="true" style="font-size:11px;margin-left:1px"></i></div>
+  </div>
+  <div class="tbr">
+    <button class="tico" aria-label="Undo"><i class="ti ti-arrow-back-up" aria-hidden="true"></i></button>
+    <button class="tico" aria-label="Redo"><i class="ti ti-arrow-forward-up" aria-hidden="true"></i></button>
+    <button class="tico" aria-label="Preview"><i class="ti ti-player-play" aria-hidden="true"></i></button>
+    <div class="tbd"></div>
+    <div class="chip up"><i class="ti ti-bolt" aria-hidden="true" style="font-size:12px"></i> Upgrade</div>
+    <div class="chip pr">Publish</div>
+  </div>
+</div>
+
+<div class="edbody">
+  <div class="nav">
+    <button class="navi on" id="navAdd" onclick="toggleAddPanel()" aria-label="Add elements"><i class="ti ti-plus" aria-hidden="true"></i></button>
+    <button class="navi" aria-label="Media"><i class="ti ti-photo" aria-hidden="true"></i></button>
+    <button class="navi" aria-label="Pages"><i class="ti ti-files" aria-hidden="true"></i></button>
+    <button class="navi" aria-label="Sections"><i class="ti ti-layout-rows" aria-hidden="true"></i></button>
+    <button class="navi" aria-label="Apps"><i class="ti ti-apps" aria-hidden="true"></i></button>
+    <div style="flex:1"></div>
+    <button class="navi" aria-label="Settings"><i class="ti ti-settings" aria-hidden="true"></i></button>
+  </div>
+
+  <div class="ap" id="addPanel">
+    <div class="aptabs">
+      <div class="aptab on">Elements</div>
+      <div class="aptab">Sections</div>
+      <div class="aptab">Apps</div>
+    </div>
+    <input class="apsearch" type="text" placeholder="Search All&#8230;" aria-label="Search">
+    <div class="apcols">
+      <div class="apcat-list">
+        <div class="apcat">Home</div>
+        <div class="apcat">Text</div>
+        <div class="apcat">Image</div>
+        <div class="apcat">Button</div>
+        <div class="apcat">Graphics</div>
+        <div class="apcat">Store</div>
+        <div class="apcat">Bookings</div>
+        <div class="apcat">Box</div>
+        <div class="apcat">Video</div>
+        <div class="apcat on">Forms</div>
+        <div class="apcat">Popup</div>
+        <div class="apcat">Menu</div>
+        <div class="apcat">Gallery</div>
+        <div class="apcat">Social</div>
+        <div class="apcat">Code</div>
+      </div>
+      <div class="apcontent">
+        <div class="fa hot" onclick="openModal()" role="button" tabindex="0" style="cursor:pointer">
+          <div class="fai"><i class="ti ti-file-plus" aria-hidden="true"></i></div>
+          <div class="fat"><div class="fat-t">Create new Form</div><div class="fat-d">Start from scratch</div></div>
+        </div>
+        <div class="fa">
+          <div class="fai ai"><i class="ti ti-sparkles" aria-hidden="true"></i></div>
+          <div class="fat"><div class="fat-t">Generate with AI</div><div class="fat-d">From a prompt</div></div>
+        </div>
+        <div class="fa hot" onclick="openModal()" role="button" tabindex="0" style="cursor:pointer">
+          <div class="fai"><i class="ti ti-clipboard" aria-hidden="true"></i></div>
+          <div class="fat"><div class="fat-t">Add existing Form</div><div class="fat-d">Use a saved form</div></div>
+        </div>
+        <div class="apdiv"></div>
+        <div class="apsh">Form templates <span class="apsa">See all</span></div>
+        <div class="tgrid">
+          <div class="tc" style="background:#F3F0FF;border-color:#E0D9FF"></div>
+          <div class="tc" style="background:#F0F7FF;border-color:#D9ECFF"></div>
+          <div class="tc" style="background:#FFF5F0;border-color:#FFE0D9"></div>
+          <div class="tc" style="background:#F0FFF5;border-color:#D9FFE8"></div>
+        </div>
+        <div class="apdiv"></div>
+        <div class="apsh">Fields <span class="apsa">See all</span></div>
+        <div class="fgrid">
+          <div class="fi"><i class="ti ti-text-size" aria-hidden="true"></i><span>Short answer</span></div>
+          <div class="fi"><i class="ti ti-align-left" aria-hidden="true"></i><span>Long answer</span></div>
+          <div class="fi"><i class="ti ti-numbers" aria-hidden="true"></i><span>Number</span></div>
+          <div class="fi"><i class="ti ti-link" aria-hidden="true"></i><span>Link</span></div>
+          <div class="fi"><i class="ti ti-upload" aria-hidden="true"></i><span>File upload</span></div>
+          <div class="fi"><i class="ti ti-star" aria-hidden="true"></i><span>Star rating</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="canvas" id="canvas" onclick="clearAll()">
+    <div class="csite">
+      <div class="snav">
+        <span class="slogo">Veda Yoga</span>
+        <div class="slinks">
+          <span class="slink">Classes</span>
+          <span class="slink">Instructor</span>
+          <span class="slink" style="font-weight:600">Book Online</span>
+          <span class="slink">Contact</span>
+        </div>
+      </div>
+      <div class="spricing">
+        <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8B7355;">Book a Class</div>
+        <div class="pcrow">
+          <div class="pc"><div class="pprice">65 &#8364;</div><div class="pname">Single Session</div><button class="pbtn">Book Now</button></div>
+          <div class="pc"><div class="pprice">50 &#8364;</div><div class="pname">Monthly Pack</div><button class="pbtn">Book Now</button></div>
+        </div>
+        <div id="form-area" style="width:100%"></div>
+      </div>
+    </div>
+    <div style="position:absolute;top:4px;right:8px;font-size:10px;color:#9CA3AF;background:rgba(244,243,239,0.8);padding:1px 5px;border-radius:3px;">W: 1280 px</div>
+  </div>
+
+  <div class="ppanel" id="ppanel"><div class="pp-inner" id="ppInner"></div></div>
+</div>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Form connection dialog">
+  <div class="modal">
+
+    <div id="ms1">
+      <div class="mh">
+        <div><div class="mt">Where should submissions go?</div><div class="ms">Choose how this form saves data when visitors submit it.</div></div>
+        <button class="mx" onclick="closeModal()" aria-label="Close"><i class="ti ti-x" aria-hidden="true"></i></button>
+      </div>
+      <div class="mb">
+        <div class="chrow">
+          <div class="chcard" id="cc-wf" onclick="pickChoice('wf')" role="radio" aria-checked="false" tabindex="0">
+            <div class="cchk"><i class="ti ti-check" aria-hidden="true" style="font-size:10px;color:#fff"></i></div>
+            <div class="chico wf"><i class="ti ti-forms" aria-hidden="true"></i></div>
+            <div class="cht">Wix Forms</div>
+            <div class="chd">Manage responses in a dashboard. Set up email notifications and automations.</div>
+            <div class="chtags"><span class="chtag">Contact</span><span class="chtag">Survey</span><span class="chtag">Signup</span></div>
+          </div>
+          <div class="chcard" id="cc-cms" onclick="pickChoice('cms')" role="radio" aria-checked="false" tabindex="0">
+            <div class="cchk"><i class="ti ti-check" aria-hidden="true" style="font-size:10px;color:#fff"></i></div>
+            <div class="chico cms"><i class="ti ti-database" aria-hidden="true"></i></div>
+            <div class="cht">CMS Collection</div>
+            <div class="chd">Save submissions as structured data. Display on dynamic pages or lists.</div>
+            <div class="chtags"><span class="chtag">Directory</span><span class="chtag">Catalogue</span><span class="chtag">UGC</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="mf">
+        <div class="dots"><div class="dot on"></div><div class="dot"></div></div>
+        <button class="btn" onclick="closeModal()">Cancel</button>
+        <button class="btn btnp" id="btn1" disabled onclick="goStep2()">Continue <i class="ti ti-arrow-right" aria-hidden="true" style="font-size:12px"></i></button>
+      </div>
+    </div>
+
+    <div id="ms2wf" style="display:none">
+      <div class="mh">
+        <div><div class="mt">Choose a form</div><div class="ms">Select an existing form from your site, or start a new one.</div></div>
+        <button class="mx" onclick="closeModal()" aria-label="Close"><i class="ti ti-x" aria-hidden="true"></i></button>
+      </div>
+      <div class="mb" style="padding-top:10px">
+        <div class="listwrap">
+          <div class="listitem" onclick="pickWF('contact',this)">
+            <div class="liico"><i class="ti ti-mail" aria-hidden="true"></i></div>
+            <div class="liinfo"><div class="liname">Contact Us</div><div class="limeta">4 fields &#183; 38 submissions</div></div>
+            <div class="lichk"><i class="ti ti-check" aria-hidden="true" style="font-size:10px;color:#fff"></i></div>
+          </div>
+          <div class="listitem" onclick="pickWF('subscribe',this)">
+            <div class="liico"><i class="ti ti-bell" aria-hidden="true"></i></div>
+            <div class="liinfo"><div class="liname">Subscribe</div><div class="limeta">2 fields &#183; 1,203 submissions</div></div>
+            <div class="lichk"><i class="ti ti-check" aria-hidden="true" style="font-size:10px;color:#fff"></i></div>
+          </div>
+          <div class="listitem" onclick="pickWF('register',this)">
+            <div class="liico"><i class="ti ti-user-plus" aria-hidden="true"></i></div>
+            <div class="liinfo"><div class="liname">Class Registration</div><div class="limeta">5 fields &#183; 12 submissions</div></div>
+            <div class="lichk"><i class="ti ti-check" aria-hidden="true" style="font-size:10px;color:#fff"></i></div>
+          </div>
+          <div class="listitem" onclick="pickWF('feedback',this)">
+            <div class="liico"><i class="ti ti-star" aria-hidden="true"></i></div>
+            <div class="liinfo"><div class="liname">Feedback</div><div class="limeta">3 fields &#183; 7 submissions</div></div>
+            <div class="lichk"><i class="ti ti-check" aria-hidden="true" style="font-size:10px;color:#fff"></i></div>
+          </div>
+        </div>
+        <div class="linew" onclick="pickWF('new',null)"><i class="ti ti-plus" aria-hidden="true" style="font-size:16px"></i> Create new form from scratch</div>
+      </div>
+      <div class="mf">
+        <div class="dots"><div class="dot"></div><div class="dot on"></div></div>
+        <button class="btn" onclick="goBack()"><i class="ti ti-arrow-left" aria-hidden="true" style="font-size:12px"></i> Back</button>
+        <button class="btn btnp" id="btn2wf" disabled onclick="placeWF()">Add form</button>
+      </div>
+    </div>
+
+    <div id="ms2cms" style="display:none">
+      <div class="mh">
+        <div><div class="mt">Choose a collection</div><div class="ms">Form fields will update to match the collection's structure.</div></div>
+        <button class="mx" onclick="closeModal()" aria-label="Close"><i class="ti ti-x" aria-hidden="true"></i></button>
+      </div>
+      <div class="mb" style="padding-top:10px">
+        <div class="listwrap">
+          <div class="listitem" onclick="pickCMS('recipes',this)">
+            <div class="liico"><i class="ti ti-tools-kitchen-2" aria-hidden="true"></i></div>
+            <div class="liinfo"><div class="liname">Recipes</div><div class="limeta">6 fields &#183; recipe name, prep time, cooking time&#8230;</div></div>
+            <div class="lichk"><i class="ti ti-check" aria-hidden="true" style="font-size:10px;color:#fff"></i></div>
+          </div>
+        </div>
+        <div class="linew" onclick="pickCMS('new',null)"><i class="ti ti-plus" aria-hidden="true" style="font-size:16px"></i> Create a new collection</div>
+      </div>
+      <div class="mf">
+        <div class="dots"><div class="dot"></div><div class="dot on"></div></div>
+        <button class="btn" onclick="goBack()"><i class="ti ti-arrow-left" aria-hidden="true" style="font-size:12px"></i> Back</button>
+        <button class="btn btnp" id="btn2cms" disabled onclick="placeCMS()">Connect</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <i class="ti ti-check" aria-hidden="true" style="font-size:14px"></i><span id="toast-msg"></span>
+</div>
+
+</div>
+</div>
+
+<script>
+var cType=null,cWF=null,cCMS=null,CF=null;
+var WF={
+  contact:{title:'Contact Us',sub:'Send Message',cls:'wf',fields:[{l:'Name',t:'text'},{l:'Email',t:'text'},{l:'Phone',t:'text'},{l:'Message',t:'ta'}]},
+  subscribe:{title:'Subscribe',sub:'Subscribe',cls:'wf',fields:[{l:'First Name',t:'text'},{l:'Email Address',t:'text'}]},
+  register:{title:'Class Registration',sub:'Register Now',cls:'wf',fields:[{l:'Full Name',t:'text'},{l:'Email',t:'text'},{l:'Phone',t:'text'},{l:'Preferred Class',t:'text'},{l:'Notes',t:'ta'}]},
+  feedback:{title:'Share Your Feedback',sub:'Submit',cls:'wf',fields:[{l:'Name',t:'text'},{l:'Rating',t:'text'},{l:'Comment',t:'ta'}]},
+  new:{title:'New Form',sub:'Submit',cls:'wf',fields:[{l:'Name',t:'text'},{l:'Email',t:'text'},{l:'Message',t:'ta'}]}
+};
+var CMS={
+  recipes:{name:'Recipes',id:'recipes',context:'Recipes Item',title:'Submit a Recipe',sub:'Submit',cls:'cms',fields:[
+    {l:'Recipe Name',t:'text',key:'recipeName'},
+    {l:'Prep Time',t:'half',key:'prepTime'},
+    {l:'Cooking Time',t:'half',key:'cookingTime'},
+    {l:'Ingredients',t:'ta',key:'ingredients'},
+    {l:'Instructions',t:'ta',key:'instructions'},
+    {l:'Photos',t:'file',key:'photos'}
+  ]},
+  new:{name:'New Collection',id:'collection',context:'Collection Item',title:'New Form',sub:'Submit',cls:'cms',fields:[
+    {l:'Field 1',t:'text',key:'field1'},{l:'Field 2',t:'text',key:'field2'}
+  ]}
+};
+function snake(s,c){
+  return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 16 16" fill="none" aria-hidden="true">'
+    +'<path d="M2 10.6C3.5 6 5.4 6 7 8.4S10.6 11 13 6.4" stroke="'+c+'" stroke-width="1.7" stroke-linecap="round"/>'
+    +'<circle cx="2" cy="10.6" r="1.4" fill="'+c+'"/><circle cx="13" cy="6.4" r="1.4" fill="'+c+'"/></svg>';
+}
+function closeAddPanel(){document.getElementById('addPanel').classList.add('closed');document.getElementById('navAdd').classList.remove('on');}
+function openAddPanel(){document.getElementById('addPanel').classList.remove('closed');document.getElementById('navAdd').classList.add('on');}
+function toggleAddPanel(){if(document.getElementById('addPanel').classList.contains('closed'))openAddPanel();else closeAddPanel();}
+function openModal(){
+  cType=null;cWF=null;cCMS=null;
+  ['cc-wf','cc-cms'].forEach(function(id){document.getElementById(id).classList.remove('sel');document.getElementById(id).setAttribute('aria-checked','false');});
+  document.getElementById('btn1').disabled=true;
+  document.getElementById('ms1').style.display='';
+  document.getElementById('ms2wf').style.display='none';
+  document.getElementById('ms2cms').style.display='none';
+  document.getElementById('overlay').classList.add('vis');
+}
+function closeModal(){document.getElementById('overlay').classList.remove('vis');}
+function pickChoice(t){
+  cType=t;
+  document.getElementById('cc-wf').classList.toggle('sel',t==='wf');
+  document.getElementById('cc-cms').classList.toggle('sel',t==='cms');
+  document.getElementById('cc-wf').setAttribute('aria-checked',t==='wf');
+  document.getElementById('cc-cms').setAttribute('aria-checked',t==='cms');
+  document.getElementById('btn1').disabled=false;
+}
+function goStep2(){
+  document.getElementById('ms1').style.display='none';
+  if(cType==='wf'){
+    document.querySelectorAll('#ms2wf .listitem').forEach(function(e){e.classList.remove('sel');});
+    document.getElementById('btn2wf').disabled=true;cWF=null;
+    document.getElementById('ms2wf').style.display='';
+  } else {
+    document.querySelectorAll('#ms2cms .listitem').forEach(function(e){e.classList.remove('sel');});
+    document.getElementById('btn2cms').disabled=true;cCMS=null;
+    document.getElementById('ms2cms').style.display='';
+  }
+}
+function goBack(){
+  document.getElementById('ms2wf').style.display='none';
+  document.getElementById('ms2cms').style.display='none';
+  document.getElementById('ms1').style.display='';
+}
+function pickWF(id,el){
+  if(id==='new'){cWF='new';closeModal();renderForm(WF.new,'wf','Wix Forms');showToast('New form added &#8212; connected to Wix Forms');return;}
+  cWF=id;
+  document.querySelectorAll('#ms2wf .listitem').forEach(function(e){e.classList.remove('sel');});
+  if(el) el.classList.add('sel');
+  document.getElementById('btn2wf').disabled=false;
+}
+function pickCMS(id,el){
+  if(id==='new'){cCMS='new';closeModal();renderForm(CMS.new,'cms','New Collection');showToast('New collection created &#8212; form connected');return;}
+  cCMS=id;
+  document.querySelectorAll('#ms2cms .listitem').forEach(function(e){e.classList.remove('sel');});
+  if(el) el.classList.add('sel');
+  document.getElementById('btn2cms').disabled=false;
+}
+function placeWF(){var f=WF[cWF]||WF.new;closeModal();renderForm(f,'wf','Wix Forms');showToast('Form "'+f.title+'" added &#8212; connected to Wix Forms');}
+function placeCMS(){var c=CMS[cCMS];if(!c)return;closeModal();renderForm(c,'cms',c.name);showToast('Form connected to '+c.name+' collection');}
+function fieldHTML(f,idx){
+  var inner;
+  if(f.t==='ta') inner='<textarea class="cfta" placeholder="'+f.l+'&#8230;" readonly></textarea>';
+  else if(f.t==='file') inner='<div class="cffile"><i class="ti ti-photo" aria-hidden="true" style="font-size:14px"></i> Upload '+f.l.toLowerCase()+'</div>';
+  else inner='<input class="cfinput" type="text" placeholder="'+f.l+'&#8230;" readonly>';
+  return '<div class="cfl" data-idx="'+idx+'" onclick="selectField(this,event)"><div class="cflabel">'+f.l+'</div>'+inner+'<div class="selframe"><i></i><i></i><i></i><i></i></div></div>';
+}
+function renderForm(data,type,dest){
+  CF={type:type,dest:dest,data:data,context:(data.context||(dest+' Item')),collId:(data.id||dest.toLowerCase().replace(/[^a-z0-9]/g,''))};
+  var badge=type==='cms'
+    ? '<div class="cbadge cms"><i class="ti ti-database" aria-hidden="true" style="font-size:10px"></i> Connected to <strong>'+dest+'</strong></div>'
+    : '<div class="cbadge"><i class="ti ti-forms" aria-hidden="true" style="font-size:10px"></i> Wix Forms</div>';
+  var html='',i=0,fs=data.fields;
+  while(i<fs.length){
+    if(fs[i].t==='half' && fs[i+1] && fs[i+1].t==='half'){
+      html+='<div class="cfrow">'+fieldHTML(fs[i],i)+fieldHTML(fs[i+1],i+1)+'</div>';i+=2;
+    } else { html+=fieldHTML(fs[i],i);i+=1; }
+  }
+  var submit='<div class="cfl cfl-sub" onclick="selectButton(this,event)"><button class="cfsub '+type+'">'+data.sub+'</button><div class="selframe"><i></i><i></i><i></i><i></i></div></div>';
+  var handles='<div class="formframe"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>';
+  document.getElementById('form-area').innerHTML=
+    '<div class="cform '+type+'" onclick="selectForm(event)">'+badge
+    +'<div class="ctitle">'+data.title+'</div>'+html+submit+handles+'</div>';
+  closeAddPanel();closePanel();
+  document.getElementById('canvas').scrollTop=0;
+}
+function openPanel(){document.getElementById('ppanel').classList.add('open');}
+function closePanel(){document.getElementById('ppanel').classList.remove('open');}
+function clearSel(){
+  var fa=document.getElementById('form-area');var cf=fa.querySelector('.cform');if(cf)cf.classList.remove('sel');
+  fa.querySelectorAll('.cfl').forEach(function(e){e.classList.remove('sel');});
+}
+function selectForm(ev){
+  if(ev) ev.stopPropagation();
+  var cf=document.getElementById('form-area').querySelector('.cform');if(!cf)return;
+  clearSel();cf.classList.add('sel');
+  renderPanelForm();openPanel();
+}
+function selectField(el,ev){
+  if(ev) ev.stopPropagation();
+  clearSel();el.classList.add('sel');
+  renderPanelField(parseInt(el.getAttribute('data-idx'),10));openPanel();
+}
+function selectButton(el,ev){
+  if(ev) ev.stopPropagation();
+  clearSel();el.classList.add('sel');
+  renderPanelButton();openPanel();
+}
+function selectFormFromPanel(){selectForm(null);}
+function clearAll(){clearSel();closePanel();}
+function toggleSwitch(el){var off=el.classList.toggle('off');el.setAttribute('aria-checked',off?'false':'true');}
+function renderPanelForm(){
+  var inner=document.getElementById('ppInner');
+  if(CF.type==='cms'){
+    inner.innerHTML=
+      '<div class="pp-head"><div class="pp-title">Form</div>'
+      +'<button class="pp-icbtn" aria-label="More actions"><i class="ti ti-dots" aria-hidden="true"></i></button>'
+      +'<span class="pp-snake" title="Connected to CMS">'+snake(18,'#E21E78')+'</span></div>'
+      +'<div class="pp-body"><div class="pp-sec"><span class="pp-lbl">Connect Form to</span>'
+      +'<div class="pp-card"><div class="cic"><i class="ti ti-tools-kitchen-2" aria-hidden="true"></i></div>'
+      +'<div class="ctx"><b>'+CF.context+'</b><span>'+CF.dest+' collection</span></div></div>'
+      +'<div class="pp-hint">All fields in this form save to the connected collection. Select a field to see how it maps.</div>'
+      +'</div></div>';
+  } else {
+    inner.innerHTML=
+      '<div class="pp-head"><div class="pp-title">Form</div>'
+      +'<button class="pp-icbtn" aria-label="More actions"><i class="ti ti-dots" aria-hidden="true"></i></button></div>'
+      +'<div class="pp-body"><div class="pp-sec"><span class="pp-lbl">Submissions go to</span>'
+      +'<div class="pp-card"><div class="cic" style="background:#F0EAFF;color:#7B5EA7"><i class="ti ti-forms" aria-hidden="true"></i></div>'
+      +'<div class="ctx"><b>Wix Forms</b><span>Responses in dashboard</span></div></div>'
+      +'<div class="pp-hint">Manage all responses in your Wix Forms dashboard.</div>'
+      +'</div></div>';
+  }
+}
+function renderPanelField(idx){
+  var f=CF.data.fields[idx];
+  var valueSec='';
+  if(CF.type==='cms'){
+    var path=CF.collId+'.'+(f.key||'field');
+    valueSec='<div class="pp-sec"><span class="pp-lbl">Value</span>'
+      +'<div class="pp-bind"><span class="pp-bind-ic">'+snake(15,'#E21E78')+'</span>'
+      +'<span class="pp-bind-path">'+path+'</span></div></div>';
+  }
+  document.getElementById('ppInner').innerHTML=
+    '<div class="pp-head"><button class="pp-back" onclick="selectFormFromPanel()" aria-label="Back to form"><i class="ti ti-chevron-left" aria-hidden="true"></i></button>'
+    +'<div class="pp-title">Properties</div>'
+    +'<button class="pp-icbtn" aria-label="More actions"><i class="ti ti-dots" aria-hidden="true"></i></button></div>'
+    +'<div class="pp-body">'
+    +valueSec
+    +'<div class="pp-sec"><span class="pp-lbl">Field title</span><input class="pp-input" value="'+f.l+'"></div>'
+    +'<div class="pp-sec"><div class="pp-row"><span>Required field</span><div class="pp-toggle off" role="switch" aria-checked="false" onclick="toggleSwitch(this)"></div></div></div>'
+    +'</div>';
+}
+function renderPanelButton(){
+  var head='<div class="pp-head"><button class="pp-back" onclick="selectFormFromPanel()" aria-label="Back to form"><i class="ti ti-chevron-left" aria-hidden="true"></i></button>'
+    +'<div class="pp-title">Properties</div>'
+    +'<button class="pp-icbtn" aria-label="More actions"><i class="ti ti-dots" aria-hidden="true"></i></button>';
+  var actionSec;
+  if(CF.type==='cms'){
+    head+='<span class="pp-snake" title="Connected to CMS">'+snake(18,'#E21E78')+'</span>';
+    actionSec='<div class="pp-sec"><span class="pp-lbl">Click action</span>'
+      +'<div class="pp-bind"><span class="pp-bind-ic">'+snake(15,'#E21E78')+'</span>'
+      +'<span class="pp-bind-txt">Submit to '+CF.dest+'</span></div></div>';
+  } else {
+    actionSec='<div class="pp-sec"><span class="pp-lbl">Click action</span><div class="pp-type"><i class="ti ti-send" aria-hidden="true"></i> Submit form</div></div>';
+  }
+  head+='</div>';
+  document.getElementById('ppInner').innerHTML=head
+    +'<div class="pp-body">'
+    +'<div class="pp-sec"><span class="pp-lbl">Button text</span><input class="pp-input" value="'+CF.data.sub+'"></div>'
+    +actionSec
+    +'</div>';
+}
+var toastTimer;
+function showToast(msg){
+  var t=document.getElementById('toast');
+  document.getElementById('toast-msg').innerHTML=msg;
+  t.classList.add('vis');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){t.classList.remove('vis');},3500);
+}
+</script>
+</body>
+</html>
