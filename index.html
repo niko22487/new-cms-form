@@ -678,7 +678,7 @@ function renderPanelButton(){
       +'<div class="pp-sec"><span class="pp-lbl">Button label</span><input class="pp-input" value="'+(CF.submitLabel||CF.data.sub)+'"></div>'
       +'<div class="pp-sec"><span class="pp-lbl">On click action</span>'
       +'<div class="pp-bind"><span class="pp-bind-ic">'+snake(15,'#E21E78')+'</span>'
-      +'<span class="pp-bind-path">'+CF.collId+'.item.save</span></div></div>';
+      +'<span class="pp-bind-path">'+CF.collId+'.item.'+(CF.mode==='edit'?'update':'new')+'</span></div></div>';
   } else {
     body='<div class="pp-sec"><span class="pp-lbl">Button label</span><input class="pp-input" value="'+(CF.submitLabel||CF.data.sub)+'"></div>'
       +'<div class="pp-sec"><span class="pp-lbl">On click action</span><div class="pp-type"><i class="ti ti-send" aria-hidden="true"></i> Submit form</div></div>';
