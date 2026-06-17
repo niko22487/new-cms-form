@@ -34,7 +34,7 @@ body{background:#F4F3EF;font-family:var(--font-sans);overflow:hidden;}
 .navi{width:32px;height:32px;border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6B7280;font-size:18px;border:none;background:transparent;}
 .navi:hover{background:#F3F4F6;}
 .navi.on{background:#EEF3FF;color:#116DFF;}
-.ap{width:220px;flex-shrink:0;background:#fff;border-right:1px solid #E5E5EA;display:flex;flex-direction:column;overflow:hidden;transition:width .22s ease,opacity .16s ease;}
+.ap{width:300px;flex-shrink:0;background:#fff;border-right:1px solid #E5E5EA;display:flex;flex-direction:column;overflow:hidden;transition:width .22s ease,opacity .16s ease;}
 .ap.closed{width:0;opacity:0;border-right:none;pointer-events:none;}
 .aptabs{display:flex;padding:8px 10px 0;gap:2px;flex-shrink:0;border-bottom:1px solid #E5E5EA;}
 .aptab{font-size:12px;padding:5px 8px;cursor:pointer;color:#6B7280;border-bottom:2px solid transparent;margin-bottom:-1px;}
@@ -292,14 +292,16 @@ body{background:#F4F3EF;font-family:var(--font-sans);overflow:hidden;}
         <div class="apcat">Bookings</div>
         <div class="apcat">Box</div>
         <div class="apcat">Video</div>
-        <div class="apcat on">Forms</div>
+        <div class="apcat on" id="catForms" onclick="showCat('forms')">Forms</div>
         <div class="apcat">Popup</div>
         <div class="apcat">Menu</div>
         <div class="apcat">Gallery</div>
         <div class="apcat">Social</div>
+        <div class="apcat" id="catCms" onclick="showCat('cms')">CMS</div>
         <div class="apcat">Code</div>
       </div>
       <div class="apcontent">
+        <div id="content-forms">
         <div class="fa hot" onclick="openModal()" role="button" tabindex="0" style="cursor:pointer">
           <div class="fai"><i class="ti ti-file-plus" aria-hidden="true"></i></div>
           <div class="fat"><div class="fat-t">Create new Form</div><div class="fat-d">Start from scratch</div></div>
@@ -329,6 +331,21 @@ body{background:#F4F3EF;font-family:var(--font-sans);overflow:hidden;}
           <div class="fi"><i class="ti ti-link" aria-hidden="true"></i><span>Link</span></div>
           <div class="fi"><i class="ti ti-upload" aria-hidden="true"></i><span>File upload</span></div>
           <div class="fi"><i class="ti ti-star" aria-hidden="true"></i><span>Star rating</span></div>
+        </div>
+        </div>
+        <div id="content-cms" style="display:none">
+          <div class="fa hot" onclick="openModal()" role="button" tabindex="0" style="cursor:pointer">
+            <div class="fai"><i class="ti ti-file-plus" aria-hidden="true"></i></div>
+            <div class="fat"><div class="fat-t">Create new Form</div><div class="fat-d">Start from scratch</div></div>
+          </div>
+          <div class="fa">
+            <div class="fai ai"><i class="ti ti-sparkles" aria-hidden="true"></i></div>
+            <div class="fat"><div class="fat-t">Generate with AI</div><div class="fat-d">From a prompt</div></div>
+          </div>
+          <div class="fa hot" onclick="openModal()" role="button" tabindex="0" style="cursor:pointer">
+            <div class="fai"><i class="ti ti-clipboard" aria-hidden="true"></i></div>
+            <div class="fat"><div class="fat-t">Add existing Form</div><div class="fat-d">Use a saved form</div></div>
+          </div>
         </div>
       </div>
     </div>
@@ -515,6 +532,14 @@ function fkey(f){
 function closeAddPanel(){document.getElementById('addPanel').classList.add('closed');document.getElementById('navAdd').classList.remove('on');}
 function openAddPanel(){document.getElementById('addPanel').classList.remove('closed');document.getElementById('navAdd').classList.add('on');}
 function toggleAddPanel(){if(document.getElementById('addPanel').classList.contains('closed'))openAddPanel();else closeAddPanel();}
+function showCat(name){
+  var f=document.getElementById('catForms'),c=document.getElementById('catCms');
+  if(f)f.classList.toggle('on',name==='forms');
+  if(c)c.classList.toggle('on',name==='cms');
+  var cf=document.getElementById('content-forms'),cc=document.getElementById('content-cms');
+  if(cf)cf.style.display=name==='forms'?'':'none';
+  if(cc)cc.style.display=name==='cms'?'':'none';
+}
 function openModal(){
   cType=null;cWF=null;cCMS=null;
   ['cc-wf','cc-cms'].forEach(function(id){document.getElementById(id).classList.remove('sel');document.getElementById(id).setAttribute('aria-checked','false');});
