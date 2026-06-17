@@ -570,11 +570,11 @@ function fieldHTML(f,idx,item){
   var val=item?(item[f.key]||''):'';
   var has=val!=='';
   var inner;
-  if(f.t==='ta') inner='<textarea class="cfta'+(has?' filled':'')+'" '+(has?'':'placeholder="'+f.l+'&#8230;" ')+'readonly>'+(has?val:'')+'</textarea>';
+  if(f.t==='ta') inner='<textarea class="cfta'+(has?' filled':'')+'" '+(has?'':'placeholder="'+(f.placeholder||(f.l+'&#8230;'))+'" ')+'readonly>'+(has?val:'')+'</textarea>';
   else if(f.t==='file') inner=has
     ? '<div class="cffile filled"><span class="ph-thumb"><i class="ti ti-photo" aria-hidden="true"></i></span> '+val+' <i class="ti ti-x ph-x" aria-hidden="true"></i></div>'
     : '<div class="cffile"><i class="ti ti-photo" aria-hidden="true" style="font-size:14px"></i> Upload '+f.l.toLowerCase()+'</div>';
-  else inner='<input class="cfinput'+(has?' filled':'')+'" type="text" '+(has?'value="'+val+'" ':'placeholder="'+f.l+'&#8230;" ')+'readonly>';
+  else inner='<input class="cfinput'+(has?' filled':'')+'" type="text" '+(has?'value="'+val+'" ':'placeholder="'+(f.placeholder||(f.l+'&#8230;'))+'" ')+'readonly>';
   return '<div class="cfl" data-idx="'+idx+'" onclick="selectField(this,event)"><div class="cflabel">'+f.l+(f.description?'<span class="fdesc"><i class="ti ti-info-circle" aria-hidden="true"></i><span class="fdesc-tip">'+f.description+'</span></span>':'')+'</div>'+inner+'<div class="selframe"><i></i><i></i><i></i><i></i></div></div>';
 }
 function renderForm(data,type,dest){
