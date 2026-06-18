@@ -229,6 +229,33 @@ body{background:#F4F3EF;font-family:var(--font-sans);overflow:hidden;}
 .toast{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:#17191C;color:#fff;font-size:12px;font-weight:500;padding:7px 14px;border-radius:20px;white-space:nowrap;display:none;align-items:center;gap:6px;z-index:300;animation:tin 0.2s ease;}
 @keyframes tin{from{opacity:0;transform:translateX(-50%) translateY(5px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 .toast.vis{display:flex;}
+/* ---- Generate with AI ---- */
+.aiprompt{width:100%;box-sizing:border-box;min-height:88px;border:1px solid #E5E5EA;border-radius:8px;padding:11px 12px;font-family:inherit;font-size:13px;line-height:1.5;color:#17191C;resize:none;outline:none;}
+.aiprompt:focus{border-color:#116DFF;box-shadow:0 0 0 3px rgba(17,109,255,.12);}
+.aiprompt::placeholder{color:#A9AEB6;}
+.aichips-lbl{font-size:11px;color:#6B7280;margin:15px 0 8px;font-weight:500;}
+.aichips{display:flex;flex-wrap:wrap;gap:7px;}
+.aichip{border:1px solid #E5E5EA;background:#fff;border-radius:16px;padding:6px 12px;font-size:12px;color:#17191C;cursor:pointer;font-family:inherit;transition:background .12s;}
+.aichip:hover{background:#F3F4F6;border-color:#C9CDD3;}
+.aigen{padding:46px 24px 50px;display:flex;flex-direction:column;align-items:center;text-align:center;}
+.aigen-spark{width:50px;height:50px;border-radius:50%;background:#EEF3FF;color:#116DFF;display:flex;align-items:center;justify-content:center;font-size:25px;animation:aipulse 1s ease-in-out infinite;}
+@keyframes aipulse{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.14);opacity:1}}
+.aigen-title{font-size:15px;font-weight:600;color:#17191C;margin:18px 0 16px;}
+.aigen-bar{width:210px;height:5px;background:#EEF1F5;border-radius:3px;overflow:hidden;}
+.aigen-bar span{display:block;height:100%;width:38%;background:#116DFF;border-radius:3px;animation:aibar 1.15s ease-in-out infinite;}
+@keyframes aibar{0%{margin-left:-38%}100%{margin-left:100%}}
+.aigen-steps{font-size:12px;color:#6B7280;margin-top:14px;min-height:16px;}
+.airec{display:flex;align-items:flex-start;gap:12px;border:1px solid #E5E5EA;border-radius:10px;padding:15px 14px;position:relative;}
+.airec-ic{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.airec-ic.cms{background:#FCE7F1;color:#E21E78;}
+.airec-ic.wf{background:#F0EAFF;color:#7B5EA7;}
+.airec-txt{flex:1;min-width:0;padding-right:78px;}
+.airec-t{font-size:13px;font-weight:600;color:#17191C;}
+.airec-d{font-size:12px;color:#6B7280;line-height:1.5;margin-top:4px;}
+.airec-badge{position:absolute;top:14px;right:14px;font-size:10px;font-weight:600;color:#0D7D4D;background:#E6F7EE;padding:3px 9px;border-radius:10px;letter-spacing:.02em;}
+.airec-alt{display:block;width:100%;text-align:center;margin-top:13px;border:none;background:transparent;color:#116DFF;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;padding:7px;border-radius:6px;}
+.airec-alt:hover{background:#F4F8FF;text-decoration:underline;}
+.aibtn-spark{font-size:13px;margin-right:5px;}
 </style>
 </head>
 <body>
@@ -306,7 +333,7 @@ body{background:#F4F3EF;font-family:var(--font-sans);overflow:hidden;}
           <div class="fai"><i class="ti ti-file-plus" aria-hidden="true"></i></div>
           <div class="fat"><div class="fat-t">Create new Form</div><div class="fat-d">Start from scratch</div></div>
         </div>
-        <div class="fa">
+        <div class="fa hot" onclick="openAIModal()" role="button" tabindex="0" style="cursor:pointer">
           <div class="fai ai"><i class="ti ti-sparkles" aria-hidden="true"></i></div>
           <div class="fat"><div class="fat-t">Generate with AI</div><div class="fat-d">From a prompt</div></div>
         </div>
@@ -338,7 +365,7 @@ body{background:#F4F3EF;font-family:var(--font-sans);overflow:hidden;}
             <div class="fai"><i class="ti ti-file-plus" aria-hidden="true"></i></div>
             <div class="fat"><div class="fat-t">Create new Form</div><div class="fat-d">Start from scratch</div></div>
           </div>
-          <div class="fa">
+          <div class="fa hot" onclick="openAIModal()" role="button" tabindex="0" style="cursor:pointer">
             <div class="fai ai"><i class="ti ti-sparkles" aria-hidden="true"></i></div>
             <div class="fat"><div class="fat-t">Generate with AI</div><div class="fat-d">From a prompt</div></div>
           </div>
@@ -464,6 +491,8 @@ body{background:#F4F3EF;font-family:var(--font-sans);overflow:hidden;}
       </div>
     </div>
 
+    <div id="msAI" style="display:none"></div>
+
   </div>
 </div>
 
@@ -547,6 +576,7 @@ function openModal(){
   document.getElementById('ms1').style.display='';
   document.getElementById('ms2wf').style.display='none';
   document.getElementById('ms2cms').style.display='none';
+  var _ai=document.getElementById('msAI');if(_ai)_ai.style.display='none';
   document.getElementById('overlay').classList.add('vis');
 }
 function closeModal(){document.getElementById('overlay').classList.remove('vis');}
@@ -601,6 +631,113 @@ function fieldHTML(f,idx,item){
     : '<div class="cffile"><i class="ti ti-photo" aria-hidden="true" style="font-size:14px"></i> Upload '+f.l.toLowerCase()+'</div>';
   else inner='<input class="cfinput'+(has?' filled':'')+'" type="text" '+(has?'value="'+val+'" ':'placeholder="'+(f.placeholder||(f.l+'&#8230;'))+'" ')+'readonly>';
   return '<div class="cfl" data-idx="'+idx+'" onclick="selectField(this,event)"><div class="cflabel">'+f.l+(f.description?'<span class="fdesc"><i class="ti ti-info-circle" aria-hidden="true"></i><span class="fdesc-tip">'+f.description+'</span></span>':'')+'</div>'+inner+'<div class="selframe"><i></i><i></i><i></i><i></i></div></div>';
+}
+/* ---------- Generate with AI ---------- */
+function escapeHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function aiEnc(p){return encodeURIComponent(p||'').replace(/'/g,'%27');}
+function openAIModal(){
+  document.getElementById('ms1').style.display='none';
+  document.getElementById('ms2wf').style.display='none';
+  document.getElementById('ms2cms').style.display='none';
+  document.getElementById('msAI').style.display='';
+  renderAIPrompt();
+  document.getElementById('overlay').classList.add('vis');
+}
+function renderAIPrompt(pre){
+  var chips=['Submit a recipe','Contact us','Event RSVP','Newsletter signup','Customer reviews','Job applications'];
+  var chipHtml=chips.map(function(c){return '<button class="aichip" onclick="aiSetPrompt(this.textContent)">'+c+'</button>';}).join('');
+  document.getElementById('msAI').innerHTML=
+    '<div class="mh"><div><div class="mt">Generate a form with AI</div><div class="ms">Describe the form you need &#8212; we&#8217;ll build it and connect it to the right place.</div></div>'
+    +'<button class="mx" onclick="closeModal()" aria-label="Close"><i class="ti ti-x" aria-hidden="true"></i></button></div>'
+    +'<div class="mb"><textarea id="aiPrompt" class="aiprompt" placeholder="e.g. A form to submit a new recipe with ingredients and a photo" oninput="aiPromptInput()"></textarea>'
+    +'<div class="aichips-lbl">Try one of these</div><div class="aichips">'+chipHtml+'</div></div>'
+    +'<div class="mf"><button class="btn" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btnp" id="aiGenBtn" disabled onclick="aiGenerate()"><i class="ti ti-sparkles aibtn-spark" aria-hidden="true"></i>Generate</button></div>';
+  var el=document.getElementById('aiPrompt');
+  if(pre){el.value=pre;aiPromptInput();}
+}
+function aiSetPrompt(t){var el=document.getElementById('aiPrompt');el.value=t;aiPromptInput();el.focus();}
+function aiPromptInput(){document.getElementById('aiGenBtn').disabled=!document.getElementById('aiPrompt').value.trim();}
+function aiGenerate(){
+  var p=document.getElementById('aiPrompt').value.trim();if(!p)return;
+  renderAIGenerating();
+  setTimeout(function(){aiRoute(p);},1700);
+}
+function renderAIGenerating(){
+  document.getElementById('msAI').innerHTML=
+    '<div class="aigen"><div class="aigen-spark"><i class="ti ti-sparkles" aria-hidden="true"></i></div>'
+    +'<div class="aigen-title">Generating your form&#8230;</div>'
+    +'<div class="aigen-bar"><span></span></div>'
+    +'<div class="aigen-steps" id="aiSteps">Understanding your prompt&#8230;</div></div>';
+  var steps=['Understanding your prompt&#8230;','Choosing the best destination&#8230;','Building the fields&#8230;'];
+  var i=0;
+  var t=setInterval(function(){i++;var s=document.getElementById('aiSteps');if(i<steps.length&&s){s.innerHTML=steps[i];}else{clearInterval(t);}},560);
+}
+function aiClassify(p){
+  p=(p||'').toLowerCase();
+  if(/recipe|recipes|dish|ingredient|cook|cooking|meal|food|bake|baking/.test(p)) return {route:'recipes'};
+  if(/contact|get in touch|reach us|reach out|inquir|enquir|customer service|message us|support request/.test(p)) return {route:'wf',id:'contact'};
+  if(/rsvp|attend|guest list|event sign|coming to|register for the event/.test(p)) return {route:'wf',id:'rsvp'};
+  if(/subscrib|newsletter|mailing list|sign up for updates|email list|join.*list/.test(p)) return {route:'wf',id:'subscribe'};
+  var contentRe=/collect|submit|submission|share|upload|catalog|catalogue|directory|listing|review|testimonial|portfolio|product|post|article|gallery|item|entry|entries|story|stories|profile|content|recipe|property|properties|vendor|menu/g;
+  var peopleRe=/name|email|phone|register|registration|apply|applicant|application|book|booking|lead|waitlist|wait list|feedback|survey|enroll|enrol|sign ?up|details|attendee|rsvp|appointment|quote|consultation/g;
+  var c=(p.match(contentRe)||[]).length, pe=(p.match(peopleRe)||[]).length;
+  return {route:'new',cls:(c>pe?'content':'people')};
+}
+function aiRoute(p){
+  var r=aiClassify(p);
+  if(r.route==='recipes'){closeModal();renderForm(CMS.recipes,'cms','Recipes');showToast('Generated a recipe form &#8212; connected to Recipes');}
+  else if(r.route==='wf'){var f=WF[r.id];closeModal();renderForm(f,'wf',f.title);showToast('Generated &#8220;'+f.title+'&#8221; &#8212; connected to Wix Forms');}
+  else{renderAIRecommend(p,r.cls);}
+}
+function renderAIRecommend(p,cls){
+  var content=(cls==='content');
+  var recTitle=content?'Collecting content':'Collecting people&#8217;s details';
+  var recDesc=content
+    ?'Your submissions look like reusable content. Best stored in a <strong>CMS collection</strong> you can display on the site in lists and dynamic pages.'
+    :'Your form gathers people&#8217;s info. Best handled by <strong>Wix Forms</strong> &#8212; responses dashboard, email notifications and automations.';
+  var recPath=content?'CMS collection':'Wix Forms';
+  var otherPath=content?'Wix Forms':'a CMS collection';
+  var recKind=content?'cms':'wf';
+  var otherKind=content?'wf':'cms';
+  var ep=aiEnc(p);
+  document.getElementById('msAI').innerHTML=
+    '<div class="mh"><div><div class="mt">Here&#8217;s what we&#8217;d set up</div><div class="ms">Based on &#8220;'+escapeHtml(p)+'&#8221;.</div></div>'
+    +'<button class="mx" onclick="closeModal()" aria-label="Close"><i class="ti ti-x" aria-hidden="true"></i></button></div>'
+    +'<div class="mb"><div class="airec"><div class="airec-ic '+recKind+'"><i class="ti '+(content?'ti-database':'ti-forms')+'" aria-hidden="true"></i></div>'
+    +'<div class="airec-txt"><div class="airec-t">'+recTitle+'</div><div class="airec-d">'+recDesc+'</div></div>'
+    +'<div class="airec-badge">Recommended</div></div>'
+    +'<button class="airec-alt" onclick="aiPlaceNew(\''+otherKind+'\',\''+ep+'\')">Not quite? Use '+otherPath+' instead</button></div>'
+    +'<div class="mf"><button class="btn" onclick="renderAIPrompt(decodeURIComponent(\''+ep+'\'))"><i class="ti ti-arrow-left" aria-hidden="true" style="font-size:12px"></i> Back</button>'
+    +'<button class="btn btnp" onclick="aiPlaceNew(\''+recKind+'\',\''+ep+'\')"><i class="ti ti-sparkles aibtn-spark" aria-hidden="true"></i>Generate with '+recPath+'</button></div>';
+}
+function aiTitleCase(p){
+  var stop={a:1,an:1,the:1,'for':1,to:1,of:1,my:1,our:1,'with':1,'and':1,form:1,'new':1,create:1,build:1,make:1,generate:1,collect:1,submit:1,page:1,'in':1,'on':1,that:1,where:1,people:1,can:1,let:1,lets:1,users:1,'a':1};
+  var words=(p||'').replace(/[^a-zA-Z0-9 ]/g,' ').split(/\s+/).filter(function(w){return w&&!stop[w.toLowerCase()];});
+  words=words.slice(0,2).map(function(w){return w.charAt(0).toUpperCase()+w.slice(1).toLowerCase();});
+  return words.join(' ')||'Submissions';
+}
+function aiGenCollection(p){
+  var name=aiTitleCase(p);
+  return {name:name,id:'gen',context:name+' Item',ctxType:'CMS collection',icon:'ti-database',title:'Submit '+name,sub:'Submit',singular:(name.replace(/s$/,'')||'Item'),cls:'cms',
+    fields:[
+      {l:'Title',t:'text',key:'title',required:true,placeholder:'e.g. '+name+' name'},
+      {l:'Description',t:'ta',key:'description',description:'Shown on the item page.'},
+      {l:'Image',t:'file',key:'image'}
+    ],items:[]};
+}
+function aiGenForm(p){
+  var title=aiTitleCase(p);
+  var fields=[{l:'Full Name',t:'text'},{l:'Email',t:'text'}];
+  if(/phone|call|mobile|sms|whatsapp|number/.test((p||'').toLowerCase())) fields.push({l:'Phone',t:'text'});
+  fields.push({l:'Message',t:'ta'});
+  return {id:'gen',icon:'ti-forms',title:title,sub:'Submit',cls:'wf',fields:fields};
+}
+function aiPlaceNew(kind,ep){
+  var p=decodeURIComponent(ep||'');
+  closeModal();
+  if(kind==='cms'){var c=aiGenCollection(p);renderForm(c,'cms',c.name);showToast('Generated a new &#8220;'+c.name+'&#8221; collection + form');}
+  else{var f=aiGenForm(p);renderForm(f,'wf',f.title);showToast('Generated &#8220;'+f.title+'&#8221; &#8212; connected to Wix Forms');}
 }
 function renderForm(data,type,dest){
   CF={type:type,dest:dest,data:data,context:(data.context||(dest+' Item')),collId:(data.id||dest.toLowerCase().replace(/[^a-z0-9]/g,'')),ctxType:(data.ctxType||'CMS collection'),icon:(data.icon||(type==='wf'?'ti-forms':'ti-database')),mode:'new',editItem:0,submitLabel:data.sub};
